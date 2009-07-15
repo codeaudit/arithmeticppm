@@ -8,18 +8,18 @@ import java.util.Hashtable;
 
 public class Ppm {
 
-	private static int numeroDeContextos = 3;
+	private static int numeroDoMaiorContexto = 3;
 	private static int tamanhoDoGrupoDeBits = 8;
 	
-	private static final int ARGUMENTO_NUMERO_DE_CONTEXTOS = 1;
-	private static final int ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
+	private static final int POSICAO_ARGUMENTO_NUMERO_DO_MAIOR_CONTEXTO = 1;
+	private static final int POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
 	
 	private static Hashtable[] contextos;
 	
 	/**
 	 * 
 	 * O programa deve ser chamado passando-se parâmetros.<br/>
-	 * Uso: Ppm <i>arquivo</i> <i>[nº de contextos]</i> 
+	 * Uso: Ppm <i>arquivo</i> <i>[nº do maior contexto]</i> 
 	 * <i>[tamanho do grupo de bits]</i>
 	 * 
 	 * @param args  
@@ -28,8 +28,8 @@ public class Ppm {
 	public static void main(String[] args) {
 		
 	if (args.length < 1 || args.length > 3) {
-		System.out.println("Uso: Ppm arquivo nº de contextos] [tamanho do grupo de bits]");
-		System.out.println(" ou: Ppm arquivo [nº de contextos]");
+		System.out.println("Uso: Ppm arquivo nº do maior contexto] [tamanho do grupo de bits]");
+		System.out.println(" ou: Ppm arquivo [nº do maior contexto]");
 		System.out.println(" ou: Ppm arquivo");
 		System.exit(0);
 	}
@@ -45,20 +45,21 @@ public class Ppm {
 		e.printStackTrace();
 	}
 	
-	if (args.length >= ARGUMENTO_NUMERO_DE_CONTEXTOS+1) {
-		int aux = Integer.parseInt(args[ARGUMENTO_NUMERO_DE_CONTEXTOS]);
+	if (args.length >= POSICAO_ARGUMENTO_NUMERO_DO_MAIOR_CONTEXTO+1) {
+		int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_NUMERO_DO_MAIOR_CONTEXTO]);
 		if (aux >= 0) {
-			numeroDeContextos = aux;
+			numeroDoMaiorContexto = aux;
 		}
 	}
 
-	if (args.length == ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
-		int aux = Integer.parseInt(args[ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
+	if (args.length == POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
+		int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
 		if ((aux%2)==0)
 			tamanhoDoGrupoDeBits = aux;
 	}
 
-	contextos = new Hashtable[numeroDeContextos];
+	//criando um array de tamanho mínimo == 2, pois existe o contexto 0 e o -1
+	contextos = new Hashtable[numeroDoMaiorContexto+2]; 
 		
 	byte[] dataBlock = new byte[1024];
 	try {
