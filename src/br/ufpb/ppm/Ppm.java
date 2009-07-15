@@ -70,15 +70,21 @@ public class Ppm {
 			(número de grupos de bits x número de contextos) */
 		//Os arrays de contextos devem ter um tamanho mínimo == 2, pois existe o contexto 0 e o -1
 		contextos = new LinkedList<LinkedList<Hashtable<String, Integer>>>(); 
-			
+		for (int i = 0; i < numeroDeGruposDeBits; i++)
+			contextos.add(new LinkedList<Hashtable<String, Integer>> ());
+		
+		System.out.println(contextos.size());
+		
 		byte[] dataBlock = new byte[1024];
+		byte [] bits;
 		try {
 			int numBytes;
 			
 			while((numBytes = fis.read(dataBlock)) != -1) {
-				for (int i=0; i<numBytes ;i++) {
-					String[] bits = splitCode(getCode(dataBlock[i]), tamanhoDoGrupoDeBits);
-					for (int j = 0; j < numeroDeGruposDeBits;i++) {
+				for (int i=0; i < numBytes; i++) {
+					//String[] bits = splitCode(getCode(dataBlock[i]), tamanhoDoGrupoDeBits);
+					bits = splitCode(dataBlock[i], tamanhoDoGrupoDeBits);
+					for (int j = 0; j < bits.length; j++) {
 						ppm(bits[j], contextos.get(j), maiorContexto);
 					}
 				}
@@ -89,18 +95,44 @@ public class Ppm {
 			
 	}
 	
-	public static void ppm(String code, LinkedList<Hashtable<String, Integer>> contextos, 
+	public static void ppm(byte code, LinkedList<Hashtable<String, Integer>> contextos, 
 						   int maiorContexto) {
 		
 	}
-	
 	
 	/**
 	 * 
 	 * Divide o código em grupos iguais do tamanho do argumento <i>tamanhoDoGrupo</i>
 	 * @param code Código a ser dividido
 	 * @param tamanhoDoGrupo Tamanho dos grupos de bits resultantes da divisão
-	 * @return Um array de Strings contendo os bits dividos.<br />
+	 * @return Um array de inteiros contendo os bits divididos.<br />
+	 * Os bits mais significativos ficam nas posições menores<br />
+	 * Os bits menos significativos ficam nas posições maiores. 
+	 * 
+	 */
+	public static byte[] splitCode(byte code, int tamanhoDoGrupo) {
+		int numeroDeGrupos = 8/tamanhoDoGrupo;
+		if (numeroDeGrupos == 1) return new byte[] {code};
+		
+		byte [] result = new byte[numeroDeGrupos];
+		// anula para 8 grupos: 0x01, para 4: 0x03, para 2: 0x0F
+		byte anula = (byte) ((tamanhoDoGrupo == 1) ? 1 : tamanhoDoGrupo * tamanhoDoGrupo - 1);
+		
+		//System.out.println("Lido: " + code);
+		
+		for (int i = 0, j = numeroDeGrupos-1; i < numeroDeGrupos; i++, j--) {
+			result[j] = (byte) ((code >> (i * tamanhoDoGrupo)) & anula);
+			//System.out.println("Dividido: " + result[j]);
+		}
+		return result;
+	}
+	
+	/**
+	 * 
+	 * Divide o código em grupos iguais do tamanho do argumento <i>tamanhoDoGrupo</i>
+	 * @param code Código a ser dividido
+	 * @param tamanhoDoGrupo Tamanho dos grupos de bits resultantes da divisão
+	 * @return Um array de Strings contendo os bits divididos.<br />
 	 * Os bits mais significativos ficam nas posições menores<br />
 	 * Os bits menos significativos ficam nas posições maiores. 
 	 * 
