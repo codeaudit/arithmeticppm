@@ -73,7 +73,7 @@ public class Ppm {
 		for (int i = 0; i < numeroDeGruposDeBits; i++)
 			contextos.add(new LinkedList<Hashtable<String, Integer>> ());
 		
-		System.out.println(contextos.size());
+		//System.out.println(contextos.size());
 		
 		byte[] dataBlock = new byte[1024];
 		byte [] bits;
