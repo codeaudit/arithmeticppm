@@ -79,6 +79,16 @@ public class Ppm {
 		
 	}
 	
+	/**
+	 * 
+	 * Divide o código em grupos iguais do tamanho do argumento <i>tamanhoDoGrupo</i>
+	 * @param code Código a ser dividido
+	 * @param tamanhoDoGrupo Tamanho dos grupos de bits resultantes da divisão
+	 * @return Um array de Strings contendo os bits dividos.<br />
+	 * Os bits mais significativos ficam nas posições menores<br />
+	 * Os bits menos significativos ficam nas posições maiores. 
+	 * 
+	 */
 	public static String[] splitCode(String code, int tamanhoDoGrupo) {
 		int inicio = 0;
 		int fim = tamanhoDoGrupo;
