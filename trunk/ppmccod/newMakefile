@@ -1,0 +1,128 @@
+## -*- Makefile -*-
+##
+## Usuário: dienert
+## Hora: 14/07/2009 23:36:57
+## Makefile criado pelo Sun Studio.
+##
+## Este arquivo é gerado automaticamente.
+##
+
+
+#### Definições do compilador e da ferramenta compartilhadas por todos os destinos de construção #####
+CC = gcc
+BASICOPTS = -g
+CFLAGS = $(BASICOPTS) -g -Wall -O
+
+
+# Definir os diretórios de destino.
+TARGETDIR_hashtable_itr.c=GNU-i386-Linux
+TARGETDIR_hashtable.c=GNU-i386-Linux
+
+
+all: $(TARGETDIR_hashtable_itr.c)/hashtable_itr.c $(TARGETDIR_hashtable.c)/hashtable.c
+
+## Destino: hashtable_itr.c
+CFLAGS_hashtable_itr.c = 
+CPPFLAGS_hashtable_itr.c = \
+	-Ihashtable.c \
+	-Ippmccod.c \
+	-Ihashtable_utility.c \
+	-Itester.c \
+	-Ihashtable_itr.c \
+	-Ifuncoesppmc.c
+OBJS_hashtable_itr.c =  \
+	$(TARGETDIR_hashtable_itr.c)/hashtable.o \
+	$(TARGETDIR_hashtable_itr.c)/ppmccod.o \
+	$(TARGETDIR_hashtable_itr.c)/hashtable_utility.o \
+	$(TARGETDIR_hashtable_itr.c)/hashtable_itr.o \
+	$(TARGETDIR_hashtable_itr.c)/funcoesppmc.o
+
+
+# Vínculo ou arquivo
+SHAREDLIB_FLAGS_hashtable_itr.c = -shared 
+$(TARGETDIR_hashtable_itr.c)/hashtable_itr.c: $(TARGETDIR_hashtable_itr.c) $(OBJS_hashtable_itr.c) $(DEPLIBS_hashtable_itr.c)
+	$(LINK.c) $(CFLAGS_hashtable_itr.c) $(CPPFLAGS_hashtable_itr.c) -o $@ $(OBJS_hashtable_itr.c) $(SHAREDLIB_FLAGS_hashtable_itr.c) $(LDLIBS_hashtable_itr.c)
+
+
+# Compilar arquivos de código-fonte nos arquivos .o
+$(TARGETDIR_hashtable_itr.c)/hashtable.o: $(TARGETDIR_hashtable_itr.c) hashtable.c
+	$(COMPILE.c) $(CFLAGS_hashtable_itr.c) $(CPPFLAGS_hashtable_itr.c) -o $@ hashtable.c
+
+$(TARGETDIR_hashtable_itr.c)/ppmccod.o: $(TARGETDIR_hashtable_itr.c) ppmccod.c
+	$(COMPILE.c) $(CFLAGS_hashtable_itr.c) $(CPPFLAGS_hashtable_itr.c) -o $@ ppmccod.c
+
+$(TARGETDIR_hashtable_itr.c)/hashtable_utility.o: $(TARGETDIR_hashtable_itr.c) hashtable_utility.c
+	$(COMPILE.c) $(CFLAGS_hashtable_itr.c) $(CPPFLAGS_hashtable_itr.c) -o $@ hashtable_utility.c
+
+$(TARGETDIR_hashtable_itr.c)/hashtable_itr.o: $(TARGETDIR_hashtable_itr.c) hashtable_itr.c
+	$(COMPILE.c) $(CFLAGS_hashtable_itr.c) $(CPPFLAGS_hashtable_itr.c) -o $@ hashtable_itr.c
+
+$(TARGETDIR_hashtable_itr.c)/funcoesppmc.o: $(TARGETDIR_hashtable_itr.c) funcoesppmc.c
+	$(COMPILE.c) $(CFLAGS_hashtable_itr.c) $(CPPFLAGS_hashtable_itr.c) -o $@ funcoesppmc.c
+
+
+
+## Destino: hashtable.c
+CFLAGS_hashtable.c = 
+OBJS_hashtable.c =  \
+	$(TARGETDIR_hashtable.c)/hashtable.o \
+	$(TARGETDIR_hashtable.c)/ppmccod.o \
+	$(TARGETDIR_hashtable.c)/hashtable_utility.o \
+	$(TARGETDIR_hashtable.c)/hashtable_itr.o \
+	$(TARGETDIR_hashtable.c)/funcoesppmc.o
+
+
+# Vínculo ou arquivo
+SHAREDLIB_FLAGS_hashtable.c = -shared 
+$(TARGETDIR_hashtable.c)/hashtable.c: $(TARGETDIR_hashtable.c) $(OBJS_hashtable.c) $(DEPLIBS_hashtable.c)
+	$(LINK.c) $(CFLAGS_hashtable.c) $(CPPFLAGS_hashtable.c) -o $@ $(OBJS_hashtable.c) $(SHAREDLIB_FLAGS_hashtable.c) $(LDLIBS_hashtable.c)
+
+
+# Compilar arquivos de código-fonte nos arquivos .o
+$(TARGETDIR_hashtable.c)/hashtable.o: $(TARGETDIR_hashtable.c) hashtable.c
+	$(COMPILE.c) $(CFLAGS_hashtable.c) $(CPPFLAGS_hashtable.c) -o $@ hashtable.c
+
+$(TARGETDIR_hashtable.c)/ppmccod.o: $(TARGETDIR_hashtable.c) ppmccod.c
+	$(COMPILE.c) $(CFLAGS_hashtable.c) $(CPPFLAGS_hashtable.c) -o $@ ppmccod.c
+
+$(TARGETDIR_hashtable.c)/hashtable_utility.o: $(TARGETDIR_hashtable.c) hashtable_utility.c
+	$(COMPILE.c) $(CFLAGS_hashtable.c) $(CPPFLAGS_hashtable.c) -o $@ hashtable_utility.c
+
+$(TARGETDIR_hashtable.c)/hashtable_itr.o: $(TARGETDIR_hashtable.c) hashtable_itr.c
+	$(COMPILE.c) $(CFLAGS_hashtable.c) $(CPPFLAGS_hashtable.c) -o $@ hashtable_itr.c
+
+$(TARGETDIR_hashtable.c)/funcoesppmc.o: $(TARGETDIR_hashtable.c) funcoesppmc.c
+	$(COMPILE.c) $(CFLAGS_hashtable.c) $(CPPFLAGS_hashtable.c) -o $@ funcoesppmc.c
+
+
+
+#### Limpar o destino exclui todos os arquivos gerados ####
+clean:
+	rm -f \
+		$(TARGETDIR_hashtable_itr.c)/hashtable_itr.c \
+		$(TARGETDIR_hashtable_itr.c)/hashtable.o \
+		$(TARGETDIR_hashtable_itr.c)/ppmccod.o \
+		$(TARGETDIR_hashtable_itr.c)/hashtable_utility.o \
+		$(TARGETDIR_hashtable_itr.c)/hashtable_itr.o \
+		$(TARGETDIR_hashtable_itr.c)/funcoesppmc.o \
+		$(TARGETDIR_hashtable.c)/hashtable.c \
+		$(TARGETDIR_hashtable.c)/hashtable.o \
+		$(TARGETDIR_hashtable.c)/ppmccod.o \
+		$(TARGETDIR_hashtable.c)/hashtable_utility.o \
+		$(TARGETDIR_hashtable.c)/hashtable_itr.o \
+		$(TARGETDIR_hashtable.c)/funcoesppmc.o
+	rm -f -r $(TARGETDIR_hashtable.c)
+	rm -f -r $(TARGETDIR_hashtable_itr.c)
+
+
+# Criar o diretório de destino (se necessário)
+$(TARGETDIR_hashtable.c):
+	mkdir -p $(TARGETDIR_hashtable.c)
+$(TARGETDIR_hashtable_itr.c):
+	mkdir -p $(TARGETDIR_hashtable_itr.c)
+
+
+# Habilitar verificação de dependências
+.KEEP_STATE:
+.KEEP_STATE_FILE:.make.state.GNU-i386-Linux
+
