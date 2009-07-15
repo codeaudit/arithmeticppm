@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Hashtable;
 
 public class Ppm {
 
@@ -12,6 +13,8 @@ public class Ppm {
 	
 	private static final int ARGUMENTO_NUMERO_DE_CONTEXTOS = 1;
 	private static final int ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
+	
+	private static Hashtable[] contextos;
 	
 	/**
 	 * 
@@ -44,16 +47,18 @@ public class Ppm {
 	
 	if (args.length >= ARGUMENTO_NUMERO_DE_CONTEXTOS+1) {
 		int aux = Integer.parseInt(args[ARGUMENTO_NUMERO_DE_CONTEXTOS]);
-		if (aux >= 0)
+		if (aux >= 0) {
 			numeroDeContextos = aux;
+		}
 	}
-	
+
 	if (args.length == ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
 		int aux = Integer.parseInt(args[ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
 		if ((aux%2)==0)
 			tamanhoDoGrupoDeBits = aux;
 	}
-		
+
+	contextos = new Hashtable[numeroDeContextos];
 		
 	byte[] dataBlock = new byte[1024];
 	try {
