@@ -40,7 +40,7 @@ public class Ppm {
 		try {
 			fis = new FileInputStream(file.getCanonicalPath());
 		} catch (FileNotFoundException e) {
-			System.out.println("Arquivo não encontrado");
+			System.err.println("Arquivo não encontrado");
 			System.exit(0);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -50,6 +50,9 @@ public class Ppm {
 			int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
 			if (aux >= 0) {
 				maiorContexto = aux;
+			} else {
+				System.err.print("Contexto inválido. Utilizando contexto padrão [");
+				System.err.println(maiorContexto + "]");
 			}
 		}
 	
@@ -58,8 +61,8 @@ public class Ppm {
 			if (aux == 1 || aux == 2 || aux == 4 || aux == 8)
 				tamanhoDoGrupoDeBits = aux;
 			else {
-				System.out.println("Número inválido para o tamanho do grupo de bits");
-				System.out.println("Números válidos: 1, 2, 4 ou 8");
+				System.err.println("Número inválido para o tamanho do grupo de bits");
+				System.err.println("Números válidos: 1, 2, 4 ou 8");
 				System.exit(0);
 			}
 		}
