@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Hashtable;
+import java.util.LinkedList;
 
 public class Ppm {
 
@@ -15,7 +16,7 @@ public class Ppm {
 	private static final int POSICAO_ARGUMENTO_MAIOR_CONTEXTO = 1;
 	private static final int POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
 	
-	private static Hashtable[] contextos;
+	private static LinkedList<LinkedList<Hashtable<String, Integer>>> contextos;
 	
 	/**
 	 * 
@@ -27,57 +28,72 @@ public class Ppm {
 	 */
 	public static void main(String[] args) {
 		
-	if (args.length < 1 || args.length > 3) {
-		System.out.println("Uso: Ppm arquivo maior_contexto [tamanho do grupo de bits]");
-		System.out.println(" ou: Ppm arquivo [maior contexto]");
-		System.out.println(" ou: Ppm arquivo");
-		System.exit(0);
-	}
-		
-	File file = new File(args[0]);
-	FileInputStream fis = null;
-	try {
-		fis = new FileInputStream(file.getCanonicalPath());
-	} catch (FileNotFoundException e) {
-		System.out.println("Arquivo não encontrado");
-		System.exit(0);
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-	
-	if (args.length >= POSICAO_ARGUMENTO_MAIOR_CONTEXTO+1) {
-		int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
-		if (aux >= 0) {
-			maiorContexto = aux;
-		}
-	}
-
-	if (args.length == POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
-		int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
-		if (aux == 1 || aux == 2 || aux == 4 || aux == 8)
-			tamanhoDoGrupoDeBits = aux;
-		else {
-			System.out.println("Número inválido para o tamanho do grupo de bits");
-			System.out.println("Números válidos: 1, 2, 4 ou 8");
+		if (args.length < 1 || args.length > 3) {
+			System.out.println("Uso: Ppm arquivo maior_contexto [tamanho do grupo de bits]");
+			System.out.println(" ou: Ppm arquivo [maior contexto]");
+			System.out.println(" ou: Ppm arquivo");
 			System.exit(0);
 		}
-	}
-
-	//criando um array de tamanho mínimo == 2, pois existe o contexto 0 e o -1
-	contextos = new Hashtable[maiorContexto+2]; 
-		
-	byte[] dataBlock = new byte[1024];
-	try {
-		int numBytes;
-		
-		while((numBytes = fis.read(dataBlock)) != -1) {
 			
+		File file = new File(args[0]);
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(file.getCanonicalPath());
+		} catch (FileNotFoundException e) {
+			System.out.println("Arquivo não encontrado");
+			System.exit(0);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	} catch (IOException e) {
-		e.printStackTrace();
+		
+		if (args.length >= POSICAO_ARGUMENTO_MAIOR_CONTEXTO+1) {
+			int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
+			if (aux >= 0) {
+				maiorContexto = aux;
+			}
+		}
+	
+		if (args.length == POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
+			int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
+			if (aux == 1 || aux == 2 || aux == 4 || aux == 8)
+				tamanhoDoGrupoDeBits = aux;
+			else {
+				System.out.println("Número inválido para o tamanho do grupo de bits");
+				System.out.println("Números válidos: 1, 2, 4 ou 8");
+				System.exit(0);
+			}
+		}
+	
+		int numeroDeGruposDeBits = 8/tamanhoDoGrupoDeBits;
+		
+		/* Criando um array de arrays de Hastable de dimensão:
+			(número de grupos de bits x número de contextos) */
+		//Os arrays de contextos devem ter um tamanho mínimo == 2, pois existe o contexto 0 e o -1
+		contextos = new LinkedList<LinkedList<Hashtable<String, Integer>>>(); 
+			
+		byte[] dataBlock = new byte[1024];
+		try {
+			int numBytes;
+			
+			while((numBytes = fis.read(dataBlock)) != -1) {
+				for (int i=0; i<numBytes ;i++) {
+					String[] bits = splitCode(getCode(dataBlock[i]), tamanhoDoGrupoDeBits);
+					for (int j = 0; j < numeroDeGruposDeBits;i++) {
+						ppm(bits[j], contextos.get(j), maiorContexto);
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+			
 	}
+	
+	public static void ppm(String code, LinkedList<Hashtable<String, Integer>> contextos, 
+						   int maiorContexto) {
 		
 	}
+	
 	
 	/**
 	 * 
