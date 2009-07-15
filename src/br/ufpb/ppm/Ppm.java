@@ -81,6 +81,7 @@ public class Ppm {
 	 * @return String Representação do código binário em String
 	 */
 	public static String getCode(byte byteToConvert) {
+		//caso o byte tenha o primeiro bit == 1, este não será considerado como sinal
 		int aux = 16 * ((byteToConvert & 0xf0) >> 4) + (byteToConvert & 0x0f);
 		return getCodeUnsigenedInt(aux);
 	}
