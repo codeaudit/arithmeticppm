@@ -54,8 +54,13 @@ public class Ppm {
 
 	if (args.length == POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
 		int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
-		if ((aux%2)==0)
+		if (aux == 1 || aux == 2 || aux == 4 || aux == 8)
 			tamanhoDoGrupoDeBits = aux;
+		else {
+			System.out.println("Número inválido para o tamanho do grupo de bits");
+			System.out.println("Números válidos: 1, 2, 4 ou 8");
+			System.exit(0);
+		}
 	}
 
 	//criando um array de tamanho mínimo == 2, pois existe o contexto 0 e o -1
@@ -73,6 +78,18 @@ public class Ppm {
 	}
 		
 	}
+	
+	public static String[] splitCode(String code, int tamanhoDoGrupo) {
+		int inicio = 0;
+		int fim = tamanhoDoGrupo;
+		int numeroDeGrupos = 8/tamanhoDoGrupo;
+		String [] result = new String[numeroDeGrupos];
+		for (int i = 0; i <= numeroDeGrupos-1; inicio += tamanhoDoGrupo, fim += tamanhoDoGrupo, i++) {
+			result[i] = code.substring(inicio, fim);
+		}
+		return result;
+	}
+	
 	
 	/** 
 	 * 
