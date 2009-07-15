@@ -8,10 +8,11 @@ import java.util.Hashtable;
 
 public class Ppm {
 
-	private static int numeroDoMaiorContexto = 3;
-	private static int tamanhoDoGrupoDeBits = 8;
+	private static int maiorContexto = 3; //contexto default
+	private static int tamanhoDoGrupoDeBits = 8; //tamanho default
 	
-	private static final int POSICAO_ARGUMENTO_NUMERO_DO_MAIOR_CONTEXTO = 1;
+	//posicao dos argumentos do programa
+	private static final int POSICAO_ARGUMENTO_MAIOR_CONTEXTO = 1;
 	private static final int POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
 	
 	private static Hashtable[] contextos;
@@ -19,8 +20,7 @@ public class Ppm {
 	/**
 	 * 
 	 * O programa deve ser chamado passando-se parâmetros.<br/>
-	 * Uso: Ppm <i>arquivo</i> <i>[nº do maior contexto]</i> 
-	 * <i>[tamanho do grupo de bits]</i>
+	 * Uso: Ppm <i>arquivo</i> <i>[maior contexto]</i> <i>[tamanho do grupo de bits]</i>
 	 * 
 	 * @param args  
 	 * 
@@ -28,8 +28,8 @@ public class Ppm {
 	public static void main(String[] args) {
 		
 	if (args.length < 1 || args.length > 3) {
-		System.out.println("Uso: Ppm arquivo nº do maior contexto] [tamanho do grupo de bits]");
-		System.out.println(" ou: Ppm arquivo [nº do maior contexto]");
+		System.out.println("Uso: Ppm arquivo maior_contexto [tamanho do grupo de bits]");
+		System.out.println(" ou: Ppm arquivo [maior contexto]");
 		System.out.println(" ou: Ppm arquivo");
 		System.exit(0);
 	}
@@ -45,10 +45,10 @@ public class Ppm {
 		e.printStackTrace();
 	}
 	
-	if (args.length >= POSICAO_ARGUMENTO_NUMERO_DO_MAIOR_CONTEXTO+1) {
-		int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_NUMERO_DO_MAIOR_CONTEXTO]);
+	if (args.length >= POSICAO_ARGUMENTO_MAIOR_CONTEXTO+1) {
+		int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
 		if (aux >= 0) {
-			numeroDoMaiorContexto = aux;
+			maiorContexto = aux;
 		}
 	}
 
@@ -59,7 +59,7 @@ public class Ppm {
 	}
 
 	//criando um array de tamanho mínimo == 2, pois existe o contexto 0 e o -1
-	contextos = new Hashtable[numeroDoMaiorContexto+2]; 
+	contextos = new Hashtable[maiorContexto+2]; 
 		
 	byte[] dataBlock = new byte[1024];
 	try {
