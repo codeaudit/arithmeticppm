@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
-public class Ppm {
+public class PpmCod {
 
 	private static int maiorContexto = 3; //contexto default
 	private static int tamanhoDoGrupoDeBits = 8; //tamanho default
@@ -21,7 +21,7 @@ public class Ppm {
 	/**
 	 * 
 	 * O programa deve ser chamado passando-se parâmetros.<br/>
-	 * Uso: Ppm <i>arquivo</i> <i>[maior contexto]</i> <i>[tamanho do grupo de bits]</i>
+	 * Uso: PpmCod <i>arquivo</i> <i>[maior contexto]</i> <i>[tamanho do grupo de bits]</i>
 	 * 
 	 * @param args  
 	 * 
@@ -29,9 +29,9 @@ public class Ppm {
 	public static void main(String[] args) {
 		
 		if (args.length < 1 || args.length > 3) {
-			System.out.println("Uso: Ppm arquivo maior_contexto [tamanho do grupo de bits]");
-			System.out.println(" ou: Ppm arquivo [maior contexto]");
-			System.out.println(" ou: Ppm arquivo");
+			System.out.println("Uso: PpmCod arquivo maior_contexto [tamanho do grupo de bits]");
+			System.out.println(" ou: PpmCod arquivo [maior contexto]");
+			System.out.println(" ou: PpmCod arquivo");
 			System.exit(0);
 		}
 			
