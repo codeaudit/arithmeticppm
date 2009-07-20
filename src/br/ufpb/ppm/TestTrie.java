@@ -18,8 +18,9 @@ public class TestTrie {
 		T.search("blah");
 		T.search("");*/
 		
-		// testando para a string "zxzyzxxyzx”, exemplo do Complete Reference, pg. 145 com contexto 2
-		String palavra = "zxzyzxxyzx";
+		// testando para a string "zxzyzxxyzx”, exemplo do Complete Reference, pg. 145, com contexto 2
+		String palavra = "zxzyzxxyzx"; // isso aqui é como se fosse o arquivo a ser codificado,
+									   // vamos lendo de um em um caractere
 		String palavraAtual = "";
 		int contexto = 2;
 		
@@ -34,8 +35,8 @@ public class TestTrie {
 				T.insert(palavraAtual);
 			
 			for(int j = 0; j < palavraAtual.length()-1; j++) {
-				if (!T.search(palavraAtual.substring(j+1)))
-					T.insert(palavraAtual.substring(j+1));
+				if (!T.search(palavraAtual.substring(j+1))) // se for encontrado, já aumenta o contador
+					T.insert(palavraAtual.substring(j+1)); // insere com contador 1 no contexto atual
 			}
 		}
 				
