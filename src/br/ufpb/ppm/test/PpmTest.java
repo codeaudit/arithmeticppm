@@ -60,4 +60,14 @@ public class PpmTest {
 		assertEquals("10011100", result[0]);
 	}
 	
+	@Test
+	public void teste() {
+		for (int i = 0; i < 256; i++)
+			System.out.print((char)i);
+		System.out.println();
+		for (int i = 256; i < 512; i++)
+			System.out.print((char)i);
+		System.out.println();
+		System.out.println((char)-1);
+	}
 }

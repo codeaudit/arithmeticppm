@@ -4,7 +4,7 @@ public class TestTrie {
 
 	public static void main(String[] args) {
 
-		Trie T = new Trie();
+		Trie trie = new Trie();
 
 		/*T.insert("google");
 		T.insert("goblet");
@@ -31,16 +31,16 @@ public class TestTrie {
 				palavraAtual = palavraAtual.substring(1) + palavra.charAt(i);
 			}
 			
-			if (!T.search(palavraAtual))
-				T.insert(palavraAtual);
+			if (!trie.search(palavraAtual))
+				trie.insert(palavraAtual);
 			
 			for(int j = 0; j < palavraAtual.length()-1; j++) {
-				if (!T.search(palavraAtual.substring(j+1))) // se for encontrado, já aumenta o contador
-					T.insert(palavraAtual.substring(j+1)); // insere com contador 1 no contexto atual
+				if (!trie.search(palavraAtual.substring(j+1))) // se for encontrado, já aumenta o contador
+					trie.insert(palavraAtual.substring(j+1)); // insere com contador 1 no contexto atual
 			}
 		}
 				
-		T.percorre();
+		trie.percorre();
 
 	}
 
