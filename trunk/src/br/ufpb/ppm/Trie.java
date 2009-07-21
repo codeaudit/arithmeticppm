@@ -4,100 +4,95 @@ public class Trie {
 
 	private Node root;
 
-	public Trie()  // Constructor 
+	public Trie() // Construtor
 	{
-		root = new Node(); 
-		root.content = ' ';  // Root node contains blank - represents empty string.
+		root = new Node();
+		root.content = (char) -1; // Raiz contém um caracter diferente dos
+									// primeiros 256.
 	}
 
-	public void insert(String s)
-	{
-		Node current = root;	
-
-		if(s.length()==0)   // For empty String
-			current.marker=true;
-
-		for(int i=0;i<s.length();i++)
-		{
-
-			/* Revisit and first visit are being differentiated
-			 * to avoid overwriting child[] values during revisit
-			 */	
-
-			if(current.child[(int)(s.charAt(i)-'a')] != null)  // Revisit
-			{
-				current = current.child[(int)(s.charAt(i)-'a')];
-				System.out.println("Inserted character: "+ current.content);
-			}
-
-			else  		// First visit
-			{
-				current.child[(int)(s.charAt(i)-'a')] = new Node((int)(s.charAt(i)-'a'));
-				current = current.child[(int)(s.charAt(i)-'a')];
-				System.out.println("Inserted character: "+ current.content);
-			}
-			// Place a marker to indicate end of the word
-			if(i==s.length()-1)
-				current.marker = true;
-		}	
-		System.out.println("Finished inserting the word: "+s+"\n");
-	}
-
-
-
-	public boolean search(String s)
-	{
+	public void insert(String s) {
 		Node current = root;
-		System.out.println("\nSearching for string: "+s);
 
-		while(current != null)
-		{
-			for(int i=0;i<s.length();i++)
-			{				
-				if(current.child[(int)(s.charAt(i)-'a')] == null)
-				{
-					System.out.println("Cannot find string: "+s);
+		if (s.length() == 0) // Para String vazia
+			current.marker = true;
+
+		for (int i = 0; i < s.length(); i++) {
+
+			/*
+			 * Primeira visita e visita repetida são diferenciados para evitar
+			 * sobrescrever os valores de child[] durante a nova visita
+			 */
+
+			if (current.child[(int) s.charAt(i)] != null) // Visita repetida
+			{
+				current = current.child[(int) s.charAt(i)];
+				System.out.println("Caracter Inserido: " + current.content);
+			}
+
+			else // Primeira visita
+			{
+				current.child[(int) s.charAt(i)] = new Node((int) s.charAt(i));
+				current = current.child[(int) (s.charAt(i))];
+				System.out.println("Caracter Inserido: " + current.content);
+			}
+			// Coloca o marcado para indicar fim da palavra
+			if (i == s.length() - 1)
+				current.marker = true;
+		}
+		System.out.println("Finalizado inserindo palavra: " + s + "\n");
+	}
+
+	public boolean search(String s) {
+		Node current = root;
+		System.out.println("\nProcurando por string: " + s);
+
+		while (current != null) {
+			for (int i = 0; i < s.length(); i++) {
+				if (current.child[(int) s.charAt(i)] == null) {
+					System.out.println("String \"" + s + "\" não encontrada");
 					return false;
-				}
-				else
-				{
-					current = current.child[(int)(s.charAt(i)-'a')];
-					System.out.println("Found character: "+ current.content);
+				} else {
+					current = current.child[(int) s.charAt(i)];
+					System.out.println("Caracter \"" + current.content
+							+ "\" encontrado");
 				}
 			}
-			// If we are here, the string exists.
-			// But to ensure unwanted substrings are not found:
+			// String existe
+			// Mas para garantir que substrings indesejadas não serão
+			// encontradas:
 
-			if (current.marker == true)
-			{
-				System.out.println("Found string: "+s);
+			if (current.marker == true) {
+				System.out.println("String encontrada: " + s);
 				current.contador++;
 				return true;
-			}
-			else
-			{
-				System.out.println("Cannot find string: "+s +"(only present as a substring)");
+			} else {
+				System.out.println("String não encontrada: " + s
+						+ "(presente apenas como substring)");
 				current.contador++;
 				return false;
 			}
 		}
 
-		return false; 
+		return false;
 	}
-	
-	public void percorre () {
+
+	public void percorre() {
 		percorre(root, 0);
 	}
-	
-	public void percorre (Node no, int nivel) {
-		if (no == null) return;
-		
-		System.out.print("Caractere: " +no.content + "\nContagem: " + no.contador);
+
+	public void percorre(Node no, int nivel) {
+		if (no == null)
+			return;
+
+		System.out.print("Caractere: " + no.content + "\nContagem: "
+				+ no.contador);
 		System.out.println("\tNivel: " + nivel + "\n");
-		
+
 		for (int i = 0; i < no.child.length; i++) {
 			if (no.child[i] != null) {
-				System.out.println("Vendo filhos de: [caractere/nivel]" + no.content + "/" + no.contador);
+				System.out.println("Vendo filhos de: [caractere/nivel]"
+						+ no.content + "/" + no.contador);
 				percorre(no.child[i], nivel + 1);
 			}
 		}

@@ -3,12 +3,12 @@ package br.ufpb.ppm;
 public class Node {
 
 	char content;
-	boolean marker; /* The marker denotes the end of an word.
-					 * This is to ensure that a substring is not 
-					 * found if it was not explicitly inserted.
-					 * For example, if "manly" is inserted, and
-					 * "man" is not, then search for the word
-					 * "man" should be unsuccessful. 
+	boolean marker; /* marker denota o fim de uma palavra
+					 * Isto é para garantir que uma substring não é
+					 * encontrada se não foi inserida explicitamente.
+					 * Por exemplo, se "manly" foi inserido, e
+					 * "man" não foi, então a busca por
+					 * "man" deve falhar. 
 					 */
 	Node[] child;
 	int contador; // para o PPM
@@ -18,21 +18,18 @@ public class Node {
 	public Node()
 	{
 		marker=false;
-		// One child corresponding to one lowercase alphabet
-		child = new Node[26];
+		// Um filho para cada símbolo ASCII
+		child = new Node[256];
 		contador = 1;
 	}
 
 	
 
-	public Node(int i)
+	public Node(int character)
 	{
-		// Cell 0 corresponds to the character 'a'
-		// Cell 1 corresponds to the character 'b'
-		// ... and so on
-		content = (char)((int)'a'+i);
+		content = (char)character;
 		marker=false;
-		child = new Node[26];
+		child = new Node[256];
 		contador = 1;
 	}
 
