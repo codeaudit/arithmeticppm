@@ -4,8 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import java.io.InputStream;
-
 /** <P>A filter output stream which uses a statistical model and
  * arithmetic coding for compression of bytes read from an underlying
  * arithmetic encoder.  This encoder may be constructed from an output
