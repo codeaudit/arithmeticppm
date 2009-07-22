@@ -39,8 +39,12 @@ public class TestTrie {
 					trie.insert(palavraAtual.substring(j+1)); // insere com contador 1 no contexto atual
 			}
 		}
-				
+		
 		trie.percorre();
+		//System.out.println(trie.getTotalMesmoContexto("yzx"));
+		//System.out.println(trie.getTotalMesmoContexto("x"));
+		//System.out.println(trie.getTotalMesmoContexto("zx"));
+		//System.out.println(trie.getTotalMesmoContexto("zy"));
 
 	}
 
