@@ -17,19 +17,22 @@ public class Node {
 
 	public Node()
 	{
+		this((byte) 8);
+	}
+	
+	public Node (byte quantidade) {
 		marker=false;
-		// Um filho para cada símbolo ASCII
-		child = new Node[256];
+		child = new Node[(int) Math.pow(2, quantidade)];
 		contador = 1;
 	}
 
 	
 
-	public Node(int character)
+	public Node(byte quantidade, int character)
 	{
 		content = (char)character;
 		marker=false;
-		child = new Node[256];
+		child = new Node[(int) Math.pow(2, quantidade)];
 		contador = 1;
 	}
 

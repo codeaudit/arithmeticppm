@@ -3,6 +3,7 @@ package br.ufpb.ppm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -16,7 +17,9 @@ public class PpmCod {
 	private static final int POSICAO_ARGUMENTO_MAIOR_CONTEXTO = 1;
 	private static final int POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
 	
-	private static LinkedList<LinkedList<Hashtable<String, Integer>>> contextos;
+	//private static LinkedList<LinkedList<Hashtable<String, Integer>>> contextos;
+	private static Trie arvores[];
+	private static String palavraAtual[];
 	
 	/**
 	 * 
@@ -37,8 +40,10 @@ public class PpmCod {
 			
 		File file = new File(args[0]);
 		FileInputStream fis = null;
+		//FileOutputStream testeEscrita = null;
 		try {
 			fis = new FileInputStream(file.getCanonicalPath());
+			//testeEscrita = new FileOutputStream("testeEscrita.txt");
 		} catch (FileNotFoundException e) {
 			System.err.println("Arquivo não encontrado");
 			System.exit(0);
@@ -72,14 +77,23 @@ public class PpmCod {
 		/* Criando um array de arrays de Hastable de dimensão:
 			(número de grupos de bits x número de contextos) */
 		//Os arrays de contextos devem ter um tamanho mínimo == 2, pois existe o contexto 0 e o -1
-		contextos = new LinkedList<LinkedList<Hashtable<String, Integer>>>(); 
-		for (int i = 0; i < numeroDeGruposDeBits; i++)
-			contextos.add(new LinkedList<Hashtable<String, Integer>> ());
+		//contextos = new LinkedList<LinkedList<Hashtable<String, Integer>>>(); 
+		
+		arvores = new Trie[numeroDeGruposDeBits];
+		palavraAtual = new String[numeroDeGruposDeBits];
+		for (int i = 0; i < numeroDeGruposDeBits; i++) {
+			arvores[i] = new Trie((byte) tamanhoDoGrupoDeBits);
+			palavraAtual[i] = "";
+		}
 		
 		//System.out.println(contextos.size());
 		
+			
 		byte[] dataBlock = new byte[1024];
 		byte [] bits;
+		char chAux;
+		
+		//fis.read
 		try {
 			int numBytes;
 			
@@ -88,7 +102,35 @@ public class PpmCod {
 					//String[] bits = splitCode(getCode(dataBlock[i]), tamanhoDoGrupoDeBits);
 					bits = splitCode(dataBlock[i], tamanhoDoGrupoDeBits);
 					for (int j = 0; j < bits.length; j++) {
-						ppm(bits[j], contextos.get(j), maiorContexto);
+						//System.out.println("Valor atual: " + bits[j]);
+						
+						// se o valor do byte for negativo, faz com que fique com o valor positivo,
+						// necessario pois as posicoes do array em Trie sao todas positivas
+						chAux = (char) ((bits[j]) >= 0 ? bits[j] : 256 + bits[j]);
+						//System.out.println("Char: " +chAux);
+						
+						//	TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
+						
+						if (palavraAtual[j].length() <= maiorContexto) {
+							palavraAtual[j] += chAux;
+						} else {
+							palavraAtual[j] = palavraAtual[j].substring(1) + chAux;
+						}
+						
+						if (palavraAtual[j].length() == 0) continue;
+						
+						if (!arvores[j].search(palavraAtual[j]))
+							arvores[j].insert(palavraAtual[j]);
+						
+						for(int k = 0; k < palavraAtual[j].length()-1; k++) {
+							if (!arvores[j].search(palavraAtual[j].substring(k+1))) // se for encontrado, já aumenta o contador
+								arvores[j].insert(palavraAtual[j].substring(k+1)); // insere com contador 1 no contexto atual
+						}
+						
+						//System.out.println("Palavra atual: " + palavraAtual[j]);
+						
+						//testeEscrita.write(bits);
+						//ppm(bits[j], contextos.get(j), maiorContexto);
 					}
 				}
 			}
