@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Hashtable;
-import java.util.LinkedList;
 
 public class PpmCod {
 
@@ -61,27 +59,28 @@ public class PpmCod {
 	
 		if (args.length == POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
 			int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
-			if (aux == 1 || aux == 2 || aux == 4 || aux == 8)
+			if (aux == 1 || aux == 2 || aux == 4 || aux == 8 || aux == 16)
 				tamanhoDoGrupoDeBits = aux;
 			else {
 				System.err.println("Número inválido para o tamanho do grupo de bits");
-				System.err.println("Números válidos: 1, 2, 4 ou 8");
+				System.err.println("Números válidos: 1, 2, 4, 8 ou 16");
 				System.exit(0);
 			}
 		}
 	
-		int numeroDeGruposDeBits = 8/tamanhoDoGrupoDeBits;
+		int numeroDeGruposDeBits = (tamanhoDoGrupoDeBits) < 8 ? 8/tamanhoDoGrupoDeBits : 1;
 		
 		arvores = new Trie[numeroDeGruposDeBits];
 		palavraAtual = new String[numeroDeGruposDeBits];
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
-			arvores[i] = new Trie((byte) tamanhoDoGrupoDeBits);
+			arvores[i] = new Trie(tamanhoDoGrupoDeBits);
 			palavraAtual[i] = "";
 		}
 		
 		byte[] dataBlock = new byte[1024];
 		byte [] bits;
 		char chAux;
+		int bytesLidos = 0;
 		
 		//fis.read
 		try {
@@ -91,13 +90,30 @@ public class PpmCod {
 				for (int i=0; i < numBytes; i++) {
 					//String[] bits = splitCode(getCode(dataBlock[i]), tamanhoDoGrupoDeBits);
 					bits = splitCode(dataBlock[i], tamanhoDoGrupoDeBits);
+					bytesLidos++;
 					for (int j = 0; j < bits.length; j++) {
 						//System.out.println("Valor atual: " + bits[j]);
 						
 						// se o valor do byte for negativo, faz com que fique com o valor positivo,
 						// necessario pois as posicoes do array em Trie sao todas positivas
 						chAux = (char) ((bits[j]) >= 0 ? bits[j] : 256 + bits[j]);
-						//System.out.println("Char: " +chAux);
+						
+						//System.out.println("Char: " + (int) chAux);
+						
+						if ((tamanhoDoGrupoDeBits == 16) && (++i < numBytes)) {
+							int aux = (dataBlock[i] >= 0) ? (dataBlock[i] << 8) | chAux
+							                              : ((256 + dataBlock[i]) << 8) | chAux; 
+							chAux = (char) aux;
+							bytesLidos++;
+						}
+						
+						/*System.out.println("Char: " + (int) dataBlock[i]);
+						System.out.println("Char: " +(int) chAux);
+						
+						int teste = (int) chAux & 0xFF;						
+						System.out.println("Char: " + (char) teste);
+						teste = (int) (int) chAux >> 8;
+						System.out.println("Char: " + (char) teste);*/
 						
 						//	TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
 						
@@ -130,11 +146,6 @@ public class PpmCod {
 			
 	}
 	
-	public static void ppm(byte code, LinkedList<Hashtable<String, Integer>> contextos, 
-						   int maiorContexto) {
-		
-	}
-	
 	/**
 	 * 
 	 * Divide o código em grupos iguais do tamanho do argumento <i>tamanhoDoGrupo</i>
@@ -146,7 +157,7 @@ public class PpmCod {
 	 * 
 	 */
 	public static byte[] splitCode(byte code, int tamanhoDoGrupo) {
-		int numeroDeGrupos = 8/tamanhoDoGrupo;
+		int numeroDeGrupos = (tamanhoDoGrupo < 8) ? 8/tamanhoDoGrupo : 1;
 		if (numeroDeGrupos == 1) return new byte[] {code};
 		
 		byte [] result = new byte[numeroDeGrupos];
