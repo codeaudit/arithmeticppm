@@ -10,6 +10,7 @@ public class Node {
 	Vector<Node> filhos;
 	int contador; // para o PPM
 	int totalDeFilhos;
+	int totalEscape;
 
 	public Node(int caracter)
 	{
@@ -19,6 +20,7 @@ public class Node {
 		filhos = new Vector<Node> ();
 		contador = 1;
 		totalDeFilhos = 0;
+		totalEscape = 0;
 	}
 	
 	public Node(int caracter, int capacidade)
@@ -29,6 +31,7 @@ public class Node {
 		filhos = new Vector<Node> (capacidade, capacidade);
 		contador = 1;
 		totalDeFilhos = 0;
+		totalEscape = 0;
 	}
 	
 	public boolean equals (Object o) {

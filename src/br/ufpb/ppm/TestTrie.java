@@ -21,6 +21,8 @@ public class TestTrie {
 		// testando para a string "zxzyzxxyzx”, exemplo do Complete Reference, pg. 145, com contexto 2
 		String palavra = "zxzyzxxyzx"; // isso aqui é como se fosse o arquivo a ser codificado,
 									   // vamos lendo de um em um caractere
+		
+		palavra = "abracadabra"; // exemplo da sala
 		String palavraAtual = "";
 		int contexto = 2;
 		
@@ -40,7 +42,20 @@ public class TestTrie {
 			}
 		}
 		
-		trie.percorre();
+		//trie.percorre();
+		
+		trie.percorrePorNivel();
+		
+		/*System.out.println(trie.getTotalMesmoContexto("ab", false));		
+		System.out.println(trie.getTotalMesmoContexto("ab", true));
+		System.out.println(trie.getTotalMesmoContexto("a", false));
+		System.out.println(trie.getTotalMesmoContexto("a", true));
+		System.out.println(trie.getTotalMesmoContexto("bra", false));
+		System.out.println(trie.getTotalMesmoContexto("bra", true));
+		System.out.println(trie.getTotalMesmoContexto("abr", false));
+		System.out.println(trie.getTotalMesmoContexto("abr", true));*/
+		
+	
 		//System.out.println(trie.getTotalMesmoContexto("yzx"));
 		//System.out.println(trie.getTotalMesmoContexto("x"));
 		//System.out.println(trie.getTotalMesmoContexto("zx"));
