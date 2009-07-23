@@ -31,12 +31,12 @@ public class TestTrie {
 				palavraAtual = palavraAtual.substring(1) + palavra.charAt(i);
 			}
 			
-			if (!trie.search(palavraAtual))
-				trie.insert(palavraAtual);
+			if (!trie.procura(palavraAtual))
+				trie.insere(palavraAtual);
 			
 			for(int j = 0; j < palavraAtual.length()-1; j++) {
-				if (!trie.search(palavraAtual.substring(j+1))) // se for encontrado, já aumenta o contador
-					trie.insert(palavraAtual.substring(j+1)); // insere com contador 1 no contexto atual
+				if (!trie.procura(palavraAtual.substring(j+1))) // se for encontrado, já aumenta o contador
+					trie.insere(palavraAtual.substring(j+1)); // insere com contador 1 no contexto atual
 			}
 		}
 		
