@@ -2,139 +2,132 @@ package br.ufpb.ppm;
 
 public class Trie {
 
-	private Node root;
-	private byte quantidade;
+	private Node raiz;
+	private byte tamanhoDoBlocoDeBits;
 
-	public Trie() // Construtor
-	{
+	public Trie() {
 		this((byte) 8);
 	}
-	
-	public Trie (byte quantidade) {
-		this.quantidade = quantidade;
-		root = new Node(quantidade);
-		root.content = (char) -1; // Raiz contém um caracter diferente dos
-									// primeiros 256.
+
+	public Trie(byte tamanhoDoBlocoDeBits) {
+		this.tamanhoDoBlocoDeBits = tamanhoDoBlocoDeBits;
+		raiz = new Node(tamanhoDoBlocoDeBits);
+		raiz.conteudo = 0;
 	}
 
-	public void insert(String s) {
-		Node current = root;
-
-		if (s.length() == 0) // Para String vazia
-			current.marker = true;
-
-		for (int i = 0; i < s.length(); i++) {
-
-			/*
-			 * Primeira visita e visita repetida são diferenciados para evitar
-			 * sobrescrever os valores de child[] durante a nova visita
-			 */
-
-			if (current.child[(int) s.charAt(i)] != null) // Visita repetida
-			{
-				current = current.child[(int) s.charAt(i)];
-				//System.out.println("Caracter Inserido: " + current.content);
+	/**
+	 * 
+	 * Método que insere uma String na árvore dos contextos
+	 * @param inserindo Um array de chars, um char possui 2 bytes e é unsigned, 
+	 * ou seja, pode armazenar valores de 0 a 65535. 
+	 * Com isso, se pode armazenar valores desde grupos de 1 bit a grupos 
+	 * de 16 bits.
+	 * 
+	 */
+	public void insere(String inserindo) {
+		Node current = raiz;
+		
+		if (inserindo.length() == 0)
+			current.marcador = true;
+		for (int i = 0; i < inserindo.length(); i++) {
+			if (current.filhos[(int)inserindo.charAt(i)] != null) {
+				current = current.filhos[(int)inserindo.charAt(i)];
+			} else {
+				current.filhos[(int)inserindo.charAt(i)] = 
+					new Node(tamanhoDoBlocoDeBits, (int)inserindo.charAt(i));
+				current = current.filhos[(int)inserindo.charAt(i)];
 			}
-
-			else // Primeira visita
-			{
-				current.child[(int) s.charAt(i)] = new Node(quantidade, (int) s.charAt(i));
-				current = current.child[(int) (s.charAt(i))];
-				//System.out.println("Caracter Inserido: " + current.content);
-			}
-			// Coloca o marcado para indicar fim da palavra
-			if (i == s.length() - 1)
-				current.marker = true;
+			if (i == inserindo.length() - 1)
+				current.marcador = true;
 		}
-		//System.out.println("Finalizado inserindo palavra: " + s + "\n");
 	}
 
-	public boolean search(String s) {
-		Node current = root;
-		//System.out.println("\nProcurando por string: " + s);
-
-		while (current != null) {
-			for (int i = 0; i < s.length(); i++) {
-				if (current.child[(int) s.charAt(i)] == null) {
-					//System.out.println("String \"" + s + "\" não encontrada");
+	/**
+	 * 
+	 * Procura por uma determinada String na árvore
+	 * 
+	 * @param procurada
+	 *            String a ser procurada na árvore
+	 * @return <i>True</i> caso seja encontrada e <i>False</i> caso contrário
+	 * 
+	 */
+	public boolean procura(String procurada) {
+		Node noAtual = raiz;
+		while (noAtual != null) {
+			for (int i = 0; i < procurada.length(); i++) {
+				if (noAtual.filhos[(int) procurada.charAt(i)] == null) {
 					return false;
 				} else {
-					current = current.child[(int) s.charAt(i)];
-					//System.out.println("Caracter \"" + current.content
-					//		+ "\" encontrado");
+					noAtual = noAtual.filhos[(int) procurada.charAt(i)];
 				}
 			}
-			// String existe
-			// Mas para garantir que substrings indesejadas não serão
-			// encontradas:
-
-			if (current.marker == true) {
-				//System.out.println("String encontrada: " + s);
-				current.contador++;
+			// Garantir que substrings indesejadas não serão encontradas:
+			if (noAtual.marcador == true) {
+				noAtual.contador++;
 				return true;
 			} else {
-				//System.out.println("String não encontrada: " + s
-				//		+ "(presente apenas como substring)");
-				current.contador++;
+				noAtual.contador++;
 				return false;
 			}
 		}
-
 		return false;
 	}
-	
-	// pega a quantidade de filhos no contexto da String passada, sera utilizado no aritmetico
-	public int getTotalMesmoContexto (String s) {
-		Node current = root;
-		Node pai = root;
+
+	// pega a quantidade de filhos no contexto da String passada, sera utilizado
+	// no aritmetico
+	public int getTotalMesmoContexto(String s) {
+		Node current = raiz;
+		Node pai = raiz;
 		int total = 0;
 
 		while (current != null) {
 			for (int i = 0; i < s.length(); i++) {
-				if (current.child[(int) s.charAt(i)] == null) {
+				if (current.filhos[(int) s.charAt(i)] == null) {
 					return 0; // string nao encontrada
 				} else {
 					pai = current;
-					current = current.child[(int) s.charAt(i)];
-					//System.out.println("Caracter \"" + current.content
-					//		+ "\" encontrado");
+					current = current.filhos[(int) s.charAt(i)];
+					// System.out.println("Caracter \"" + current.content
+					// + "\" encontrado");
 				}
 			}
-			
-			for (int i = 0; i < pai.child.length; i++) {
-				if (pai.child[i] != null) {
-					total += pai.child[i].contador;
+			for (int i = 0; i < pai.filhos.length; i++) {
+				if (pai.filhos[i] != null) {
+					total += pai.filhos[i].contador;
 				}
 			}
 			return total;
 		}
-
 		return 0;
 	}
 
 	public void percorre() {
-		percorre(root, 0);
+		percorre(raiz, 0);
 	}
 
+	/**
+	 * 
+	 * Método recursivo que percorre a árvore passada como argumento no sentido
+	 * in-ordem.
+	 * 
+	 * @param no
+	 * @param nivel
+	 * 
+	 */
 	public void percorre(Node no, int nivel) {
 		if (no == null)
 			return;
-
-		System.out.print("Caractere: " + no.content + "\nContagem: "
-				+ no.contador);
+		System.out.print("Caractere: " + no.conteudo + "\nContagem: "+ no.contador);
 		System.out.println("\tNivel: " + nivel + "\n");
-
-		for (int i = 0; i < no.child.length; i++) {
-			if (no.child[i] != null) {
-				
+		for (int i = 0; i < no.filhos.length; i++) {
+			if (no.filhos[i] != null) {
 				System.out.print("Vendo filhos de: ");
-				
-				if (nivel == 0)
+				if (nivel == 0) {
 					System.out.println("raiz");
-				else
-					System.out.println("[caractere/nivel]" + no.content + "/" + no.contador);
-				
-				percorre(no.child[i], nivel + 1);
+				} else {
+					System.out.println("[caractere/nivel]" + no.conteudo + "/"+ no.contador);
+				}
+				percorre(no.filhos[i], nivel + 1);
 			}
 		}
 	}
