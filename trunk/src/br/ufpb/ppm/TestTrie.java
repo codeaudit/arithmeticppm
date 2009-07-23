@@ -4,7 +4,7 @@ public class TestTrie {
 
 	public static void main(String[] args) {
 
-		Trie trie = new Trie();
+		Trie trie = new Trie(8);
 
 		/*T.insert("google");
 		T.insert("goblet");
