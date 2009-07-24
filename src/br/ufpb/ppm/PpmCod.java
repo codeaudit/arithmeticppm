@@ -3,7 +3,11 @@ package br.ufpb.ppm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+
+import com.colloquial.arithcode.ArithEncoder;
+import com.colloquial.arithcode.BitOutput;
 
 public class PpmCod {
 
@@ -16,6 +20,8 @@ public class PpmCod {
 	
 	private static Trie arvores[];
 	private static String palavraAtual[];
+	private static ArithEncoder codificador[];
+	private static FileOutputStream fos[];
 	
 	/**
 	 * 
@@ -72,9 +78,28 @@ public class PpmCod {
 		
 		arvores = new Trie[numeroDeGruposDeBits];
 		palavraAtual = new String[numeroDeGruposDeBits];
+		codificador = new ArithEncoder[numeroDeGruposDeBits];
+		fos = new FileOutputStream[numeroDeGruposDeBits];
+		
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
 			arvores[i] = new Trie(tamanhoDoGrupoDeBits);
 			palavraAtual[i] = "";
+			int indiceAux = args[0].lastIndexOf('.');
+			String nome = (indiceAux != -1) ? 
+					args[0].substring(0, indiceAux) + "cod" + i + ".txt" :
+					args[0] + "cod" + i + ".txt";
+			//System.out.println("Nome: " + nome);
+			
+			try {
+				fos[i] = new FileOutputStream(nome);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.err.println("Problema na criação dos arquivos de saída.");
+				System.exit(0);
+			}
+			
+			codificador[i] = new ArithEncoder(new BitOutput(fos[i]));
 		}
 		
 		byte[] dataBlock = new byte[1024];
@@ -123,7 +148,7 @@ public class PpmCod {
 						
 						if (palavraAtual[j].length() == 0) continue;
 						
-//						TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
+						// TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
 						
 						if (!arvores[j].procura(palavraAtual[j]))
 							arvores[j].insere(palavraAtual[j]);
@@ -146,6 +171,9 @@ public class PpmCod {
 		
 		try {
 			fis.close();
+			for (int i = 0; i < numeroDeGruposDeBits; i++) {
+				codificador[i].close();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
