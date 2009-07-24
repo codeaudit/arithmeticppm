@@ -115,8 +115,6 @@ public class PpmCod {
 						teste = (int) (int) chAux >> 8;
 						System.out.println("Char: " + (char) teste);*/
 						
-						//	TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
-						
 						if (palavraAtual[j].length() <= maiorContexto) {
 							palavraAtual[j] += chAux;
 						} else {
@@ -124,6 +122,8 @@ public class PpmCod {
 						}
 						
 						if (palavraAtual[j].length() == 0) continue;
+						
+//						TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
 						
 						if (!arvores[j].procura(palavraAtual[j]))
 							arvores[j].insere(palavraAtual[j]);
