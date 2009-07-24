@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 import com.colloquial.arithcode.ArithEncoder;
 import com.colloquial.arithcode.BitOutput;
@@ -22,6 +23,9 @@ public class PpmCod {
 	private static String palavraAtual[];
 	private static ArithEncoder codificador[];
 	private static FileOutputStream fos[];
+	private static Vector<Vector<Character>> valoresCodificados;
+	private static int totalContextoMenosUm[];
+	
 	
 	/**
 	 * 
@@ -80,11 +84,22 @@ public class PpmCod {
 		palavraAtual = new String[numeroDeGruposDeBits];
 		codificador = new ArithEncoder[numeroDeGruposDeBits];
 		fos = new FileOutputStream[numeroDeGruposDeBits];
+		valoresCodificados = new Vector<Vector<Character>> ();
+		totalContextoMenosUm = new int[numeroDeGruposDeBits];
 		
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
 			arvores[i] = new Trie(tamanhoDoGrupoDeBits);
 			palavraAtual[i] = "";
 			int indiceAux = args[0].lastIndexOf('.');
+			totalContextoMenosUm[i] = (int) Math.pow (2, tamanhoDoGrupoDeBits);
+			if (numeroDeGruposDeBits > 1) {
+				valoresCodificados.add(new Vector<Character> (totalContextoMenosUm[i]));
+			} else if (tamanhoDoGrupoDeBits == 8){
+				valoresCodificados.add(new Vector<Character> (128, 128));
+			} else {
+				valoresCodificados.add(new Vector<Character> (512, 512));
+			}
+			
 			String nome = (indiceAux != -1) ? 
 					args[0].substring(0, indiceAux) + "cod" + i + ".txt" :
 					args[0] + "cod" + i + ".txt";
@@ -178,6 +193,19 @@ public class PpmCod {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}			
+	}
+	
+	public static void comprime(ArithEncoder aritmetico, String s, Trie arvore) {
+		PseudoNo paiAux = new PseudoNo();
+		//Node paiAux = null;
+		int[] lht;
+		
+		lht = arvore.getLowHighTotal(s, true, paiAux);
+		
+		//System.out.println(paiAux);
+		
+		//for (int i = 0; i < lht.length; i++)
+		//	System.out.println("Valores: " + lht[i]);
 	}
 	
 	/**
