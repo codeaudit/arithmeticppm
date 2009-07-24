@@ -53,7 +53,23 @@ public class TestTrie {
 		System.out.println(trie.getTotalMesmoContexto("bra", false));
 		System.out.println(trie.getTotalMesmoContexto("bra", true));
 		System.out.println(trie.getTotalMesmoContexto("abr", false));
-		System.out.println(trie.getTotalMesmoContexto("abr", true));*/
+		System.out.println(trie.getTotalMesmoContexto("abr", true));
+		int[] teste = trie.getLowHighTotal("a");
+		mostra (teste);
+		teste = trie.getLowHighTotal("b");
+		mostra (teste);
+		teste = trie.getLowHighTotal("r");
+		mostra (teste);
+		teste = trie.getLowHighTotal("c");
+		mostra (teste);
+		teste = trie.getLowHighTotal("d");
+		mostra (teste);
+		teste = trie.getLowHighTotal("l"); // escape
+		mostra (teste);
+		teste = trie.getLowHighTotal("ab");
+		mostra (teste);
+		teste = trie.getLowHighTotal("az"); // escape
+		mostra (teste);*/
 		
 	
 		//System.out.println(trie.getTotalMesmoContexto("yzx"));
@@ -61,6 +77,12 @@ public class TestTrie {
 		//System.out.println(trie.getTotalMesmoContexto("zx"));
 		//System.out.println(trie.getTotalMesmoContexto("zy"));
 
+	}
+	
+	public static void mostra (int [] array) {
+		for (int i = 0; i < array.length; i++)
+			System.out.println("Valor na posição " + i + ": " + array[i]);
+		System.out.println();
 	}
 
 }

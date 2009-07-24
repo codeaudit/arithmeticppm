@@ -124,6 +124,53 @@ public class Trie {
 		}
 		return 0;
 	}
+	
+	public int[] getLowHighTotal (String s) {
+		return getLowHighTotal (s, false);
+	}
+	
+	public int[] getLowHighTotal (String s, boolean atualiza) {
+		Node current = raiz;
+		Node pai = raiz;
+		Node aux;
+		int indiceAux;
+		int[] retorno = new int[3];
+
+		while (current != null) {
+			for (int i = 0; i < s.length(); i++) {
+				if ((indiceAux = current.filhos.indexOf(new Node (s.charAt(i)))) == -1) {
+					
+					// retorna o escape
+					retorno[0] = current.totalDeFilhos;
+					retorno[1] = current.totalDeFilhos + current.totalEscape;
+					retorno[2] = current.totalDeFilhos + current.totalEscape;
+					return retorno; // string nao encontrada
+				} else {
+					pai = current;
+					current = current.filhos.get(indiceAux);
+					// System.out.println("Caracter \"" + current.content
+					// + "\" encontrado");
+				}
+			}
+			retorno[0] = 0;
+			
+			for (int i = 0; i < pai.filhos.size(); i++) {
+				if ((aux = pai.filhos.get(i)) == current)
+					break;
+				retorno[0] += aux.contador; 
+			}
+			retorno[1] = retorno[0] + current.contador;
+			retorno[2] = pai.totalDeFilhos + pai.totalEscape;
+			
+			if (atualiza) {
+				current.contador++;
+				pai.totalDeFilhos++;
+			}
+			
+			return retorno;
+		}
+		return null;
+	}
 
 	public void percorre() {
 		percorre(raiz, 0);
