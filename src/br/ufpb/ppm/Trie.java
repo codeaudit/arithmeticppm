@@ -126,11 +126,12 @@ public class Trie {
 	}
 	
 	public int[] getLowHighTotal (String s) {
-		return getLowHighTotal (s, false);
+		return getLowHighTotal (s, false, new PseudoNo());
 	}
 	
-	public int[] getLowHighTotal (String s, boolean atualiza) {
+	public int[] getLowHighTotal (String s, boolean atualiza, PseudoNo pseudoPai) {
 		Node current = raiz;
+		//pseudoPai.no = raiz;
 		Node pai = raiz;
 		Node aux;
 		int indiceAux;
@@ -161,6 +162,10 @@ public class Trie {
 			}
 			retorno[1] = retorno[0] + current.contador;
 			retorno[2] = pai.totalDeFilhos + pai.totalEscape;
+			
+			System.out.println(pai);
+			
+			pseudoPai.no = pai;
 			
 			if (atualiza) {
 				current.contador++;
