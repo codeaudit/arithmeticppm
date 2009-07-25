@@ -164,20 +164,25 @@ public class PpmCod {
 						if (palavraAtual[j].length() == 0) continue;
 						
 						// TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
+						comprime (codificador[j], palavraAtual[j], arvores[j], j);
 						
-						if (!arvores[j].procura(palavraAtual[j]))
+						/*if (!arvores[j].procura(palavraAtual[j]))
 							arvores[j].insere(palavraAtual[j]);
 						
 						for(int k = 0; k < palavraAtual[j].length()-1; k++) {
 							if (!arvores[j].procura(palavraAtual[j].substring(k+1))) // se for encontrado, já aumenta o contador
 								arvores[j].insere(palavraAtual[j].substring(k+1)); // insere com contador 1 no contexto atual
-						}
+						}*/
 						
 						//System.out.println("Palavra atual: " + palavraAtual[j]);
 						
 						//testeEscrita.write(bits);
 						//ppm(bits[j], contextos.get(j), maiorContexto);
 					}
+				}
+				for (int i = 0; i < numeroDeGruposDeBits; i++) {
+					//arvores[i].percorrePorNivel();
+					arvores[i].percorre();
 				}
 			}
 		} catch (IOException e) {
@@ -195,17 +200,76 @@ public class PpmCod {
 		}			
 	}
 	
-	public static void comprime(ArithEncoder aritmetico, String s, Trie arvore) {
-		PseudoNo paiAux = new PseudoNo();
+	public static void comprime(ArithEncoder aritmetico, String s, Trie arvore, int j) {
+		PseudoNo paiAux = new PseudoNo(); // para podermos receber o pai por referencia
 		//Node paiAux = null;
 		int[] lht;
 		
+		if (s.length() == 0) return;
+		
 		lht = arvore.getLowHighTotal(s, true, paiAux);
+		Node pai = paiAux.no;
 		
-		//System.out.println(paiAux);
+		if (lht[0] == 0 && lht[1] == 0 && lht[2] == 0) { // não há nada no contexto, inserir e pular para o próximo
+			arvore.insereEmNo(pai, s.charAt(s.length()-1));
+			if (s.length() == 1) {
+				comprimeContextoMenosUm (aritmetico, s, j);
+				return;
+			}
+			comprime(aritmetico, s.substring(1), arvore, j);
+			return;
+		}
+		else if ((pai.totalEscape > 0 && lht[1] == lht[2])) { // deve ser codificado um escape
+			//TODO: codificar escape aqui
+			arvore.insereEmNo(pai, s.charAt(s.length()-1)); // se veio um escape
+															// é pq o símbolo não existe no contexto atual
+			if (s.length() == 1) {
+				comprimeContextoMenosUm (aritmetico, s, j);
+				return;
+			}
+			comprime (aritmetico, s.substring(1), arvore, j);
+			return;
+		}
+		else {
+			// TODO: codificar simbolo aqui
+			
+			for(int k = 0; k < s.length()-1; k++) {
+				if (!arvore.procura(s.substring(k+1))) // se for encontrado, já aumenta o contador
+					arvore.insere(s.substring(k+1)); // insere com contador 1 no contexto atual
+			}
+		}
+	}
+	
+	public static void comprimeContextoMenosUm (ArithEncoder aritmetico, String s, int j) {
+		//TODO: criar metodo de comprimir na ignorancia
+		if (s.length() > 1) return;
 		
-		//for (int i = 0; i < lht.length; i++)
-		//	System.out.println("Valores: " + lht[i]);
+		Vector<Character> valores = valoresCodificados.get(j);
+		char ch = s.charAt(0);
+		
+		int lht[] = new int[3];
+		lht[0] = (int) ch;
+		lht[1] = (int) ch + 1;
+		lht[2] = totalContextoMenosUm[j]--;
+		
+		for (int i = 0; i < valores.size(); i++) {
+			if (valores.get(i).charValue() < ch) {
+				lht[0]--;
+				lht[1]--;
+			}
+		}
+		
+		valores.add(ch);
+
+		//System.out.println("Valores: ");
+		//System.out.println(lht[0] + " " + lht[1] + " " +lht[2]);
+		
+		try {
+			aritmetico.encode(lht);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**

@@ -6,6 +6,7 @@ public class Trie {
 
 	private Node raiz;
 	private int maxCaracteres;
+	private int inicializaVetor;
 
 	public Trie() {
 		this(0);
@@ -17,15 +18,19 @@ public class Trie {
 		case 1:
 		case 2:
 		case 4:
-			raiz = new Node (0, maxCaracteres);
+			inicializaVetor = maxCaracteres;
+			raiz = new Node (0, inicializaVetor);
 			break;
 		case 8:
-			raiz = new Node (0, 128);
+			inicializaVetor = 128;
+			raiz = new Node (0, inicializaVetor);
 			break;
 		case 16:
-			raiz = new Node (0, 512);
+			inicializaVetor = 512;
+			raiz = new Node (0, inicializaVetor);
 			break;
 		default:
+			inicializaVetor = 0;
 			raiz = new Node (0);
 		}
 	}
@@ -49,9 +54,9 @@ public class Trie {
 			if ((indiceAux = current.filhos.indexOf(new Node (inserindo.charAt(i)))) != -1) {
 				current = current.filhos.get(indiceAux);
 			} else {
-				current.filhos.add(new Node(inserindo.charAt(i)));
+				current.filhos.add(new Node(inserindo.charAt(i), inicializaVetor));
 				current.totalDeFilhos++;
-				current.totalEscape++;
+				current.incrementaEscape(maxCaracteres);
 				current = current.filhos.get(current.filhos.size() - 1);
 			}
 			if (i == inserindo.length() - 1)
@@ -145,6 +150,7 @@ public class Trie {
 					retorno[0] = current.totalDeFilhos;
 					retorno[1] = current.totalDeFilhos + current.totalEscape;
 					retorno[2] = current.totalDeFilhos + current.totalEscape;
+					pseudoPai.no = current;
 					return retorno; // string nao encontrada
 				} else {
 					pai = current;
@@ -163,7 +169,7 @@ public class Trie {
 			retorno[1] = retorno[0] + current.contador;
 			retorno[2] = pai.totalDeFilhos + pai.totalEscape;
 			
-			System.out.println(pai);
+			//System.out.println(pai);
 			
 			pseudoPai.no = pai;
 			
@@ -175,6 +181,17 @@ public class Trie {
 			return retorno;
 		}
 		return null;
+	}
+	
+	// metodo para inserir um simbolo em um nó, por conta da maneira que é implementado
+	// o programa (sendo esse método chamado apenas quando há garantias de que determinado
+	// caractere não é filho do nó passado, não é feita nenhuma verificação de pertinência
+	public void insereEmNo (Node no, char insere) {
+		Node aux = new Node(insere, inicializaVetor);
+		aux.marcador = true;
+		no.filhos.add(aux);
+		no.totalDeFilhos++;
+		no.incrementaEscape(maxCaracteres);
 	}
 
 	public void percorre() {
