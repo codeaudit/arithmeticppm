@@ -213,6 +213,7 @@ public class PpmCod {
 		if (lht[0] == 0 && lht[1] == 0 && lht[2] == 0) { // não há nada no contexto, inserir e pular para o próximo
 			arvore.insereEmNo(pai, s.charAt(s.length()-1));
 			if (s.length() == 1) {
+				//System.out.println("Codificando em menos um: " +s);
 				comprimeContextoMenosUm (aritmetico, s, j);
 				return;
 			}
@@ -220,10 +221,17 @@ public class PpmCod {
 			return;
 		}
 		else if ((pai.totalEscape > 0 && lht[1] == lht[2])) { // deve ser codificado um escape
-			//TODO: codificar escape aqui
+			//System.out.println("Codificando escape em " + s);
+			try {
+				aritmetico.encode(lht);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			arvore.insereEmNo(pai, s.charAt(s.length()-1)); // se veio um escape
 															// é pq o símbolo não existe no contexto atual
 			if (s.length() == 1) {
+				//System.out.println("Apos codificar escape, codificando em menos um: " + s);
 				comprimeContextoMenosUm (aritmetico, s, j);
 				return;
 			}
@@ -231,7 +239,13 @@ public class PpmCod {
 			return;
 		}
 		else {
-			// TODO: codificar simbolo aqui
+			//System.out.println("Codificando " +s);
+			try {
+				aritmetico.encode(lht);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 			for(int k = 0; k < s.length()-1; k++) {
 				if (!arvore.procura(s.substring(k+1))) // se for encontrado, já aumenta o contador
@@ -240,6 +254,7 @@ public class PpmCod {
 		}
 	}
 	
+	// comprimindo para o contexto menos um - aparentemente funciona	
 	public static void comprimeContextoMenosUm (ArithEncoder aritmetico, String s, int j) {
 		//TODO: criar metodo de comprimir na ignorancia
 		if (s.length() > 1) return;
@@ -267,7 +282,6 @@ public class PpmCod {
 		try {
 			aritmetico.encode(lht);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
