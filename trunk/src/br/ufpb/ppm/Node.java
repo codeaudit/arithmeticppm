@@ -38,5 +38,10 @@ public class Node {
 		Node aux = (Node) o;
 		return conteudo == aux.conteudo;
 	}
+	
+	public void incrementaEscape (int maxCaracteres) { // valor maximo do escape
+		totalEscape++;
+		if (totalEscape == maxCaracteres) totalEscape = 0;
+	}
 
 }

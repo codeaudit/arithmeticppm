@@ -26,7 +26,11 @@ public class TestTrie {
 
 		palavra = "abracadabra"; // exemplo da sala
 		String palavraAtual = "";
-		int contexto = 2;
+		int teste2[] = trie.getLowHighTotal("a", true, new PseudoNo());
+		mostra (teste2);
+		teste2 = trie.getLowHighTotal("a", true, new PseudoNo());
+		mostra(teste2);
+		int contexto = 3;
 
 		for (int i = 0; i < palavra.length(); i++) {
 			if (palavraAtual.length() <= contexto) {
@@ -44,9 +48,9 @@ public class TestTrie {
 			}
 		}
 
-		//trie.percorre();
+		trie.percorre();
 
-		trie.percorrePorNivel();
+		//trie.percorrePorNivel();
 
 		System.out.println(trie.getTotalMesmoContexto("ab", false));		
 		System.out.println(trie.getTotalMesmoContexto("ab", true));
