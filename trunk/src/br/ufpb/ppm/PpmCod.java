@@ -14,10 +14,12 @@ public class PpmCod {
 
 	private static int maiorContexto = 3; //contexto default
 	private static int tamanhoDoGrupoDeBits = 8; //tamanho default
+	private static String arquivoDeSaida;
 	
 	//posicao dos argumentos do programa
 	private static final int POSICAO_ARGUMENTO_MAIOR_CONTEXTO = 1;
 	private static final int POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
+	private static final int POSICAO_ARGUMENTO_SAIDA = 3;
 	
 	private static Trie arvores[];
 	private static String palavraAtual[];
@@ -37,7 +39,8 @@ public class PpmCod {
 	 */
 	public static void main(String[] args) {
 		
-		if (args.length < 1 || args.length > 3) {
+		if (args.length < 1 || args.length > 4) {
+			System.out.println("Uso: PpmCod arquivo maior_contexto tamanho do grupo de bits [nome do arquivo de saída (sem extensão)]");
 			System.out.println("Uso: PpmCod arquivo maior_contexto [tamanho do grupo de bits]");
 			System.out.println(" ou: PpmCod arquivo [maior contexto]");
 			System.out.println(" ou: PpmCod arquivo");
@@ -67,7 +70,7 @@ public class PpmCod {
 			}
 		}
 	
-		if (args.length == POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
+		if (args.length >= POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS+1) {
 			int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
 			if (aux == 1 || aux == 2 || aux == 4 || aux == 8 || aux == 16)
 				tamanhoDoGrupoDeBits = aux;
@@ -76,6 +79,15 @@ public class PpmCod {
 				System.err.println("Números válidos: 1, 2, 4, 8 ou 16");
 				System.exit(0);
 			}
+		}
+		
+		if (args.length == POSICAO_ARGUMENTO_SAIDA+1) {
+			arquivoDeSaida = args[POSICAO_ARGUMENTO_SAIDA];
+		} else {
+			int indiceAux = args[0].lastIndexOf('.');
+			arquivoDeSaida = (indiceAux != -1 ) ? 
+					args[0].substring(0, indiceAux) + "cod" :
+						args[0] + "cod";
 		}
 	
 		int numeroDeGruposDeBits = (tamanhoDoGrupoDeBits) < 8 ? 8/tamanhoDoGrupoDeBits : 1;
@@ -86,12 +98,13 @@ public class PpmCod {
 		fos = new FileOutputStream[numeroDeGruposDeBits];
 		valoresCodificados = new Vector<Vector<Character>> ();
 		totalContextoMenosUm = new int[numeroDeGruposDeBits];
+		long tempoAntes, tempoDepois;
 		
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
 			arvores[i] = new Trie(tamanhoDoGrupoDeBits);
 			palavraAtual[i] = "";
-			int indiceAux = args[0].lastIndexOf('.');
 			totalContextoMenosUm[i] = (int) Math.pow (2, tamanhoDoGrupoDeBits);
+			
 			if (numeroDeGruposDeBits > 1) {
 				valoresCodificados.add(new Vector<Character> (totalContextoMenosUm[i]));
 			} else if (tamanhoDoGrupoDeBits == 8){
@@ -100,11 +113,10 @@ public class PpmCod {
 				valoresCodificados.add(new Vector<Character> (512, 512));
 			}
 			
-			String nome = (indiceAux != -1) ? 
-					args[0].substring(0, indiceAux) + "cod" + i + ".txt" :
-					args[0] + "cod" + i + ".txt";
 			//System.out.println("Nome: " + nome);
-			
+			String nome = (numeroDeGruposDeBits > 1) ?
+					arquivoDeSaida + i + ".txt" :
+						arquivoDeSaida + ".txt";
 			try {
 				fos[i] = new FileOutputStream(nome);
 			} catch (FileNotFoundException e) {
@@ -123,6 +135,8 @@ public class PpmCod {
 		int bytesLidos = 0;
 		
 		//fis.read
+		tempoAntes = System.currentTimeMillis();
+		System.out.println("Iniciando codificação...");
 		try {
 			int numBytes;
 			
@@ -182,12 +196,16 @@ public class PpmCod {
 				}
 				for (int i = 0; i < numeroDeGruposDeBits; i++) {
 					//arvores[i].percorrePorNivel();
-					arvores[i].percorre();
+					//arvores[i].percorre();
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		tempoDepois = System.currentTimeMillis();
+		
+		System.out.println("Codificação concluída em: " + (tempoDepois - tempoAntes) + "ms");
 		
 		try {
 			fis.close();
