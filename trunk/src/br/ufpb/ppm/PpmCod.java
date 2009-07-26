@@ -62,7 +62,7 @@ public class PpmCod {
 		
 		if (args.length >= POSICAO_ARGUMENTO_MAIOR_CONTEXTO+1) {
 			int aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
-			if (aux >= 0) {
+			if (aux >= 0 && aux < 128) {
 				maiorContexto = aux;
 			} else {
 				System.err.print("Contexto inválido. Utilizando contexto padrão [");
@@ -134,7 +134,6 @@ public class PpmCod {
 		char chAux;
 		int bytesLidos = 0;
 		
-		//fis.read
 		tempoAntes = System.currentTimeMillis();
 		System.out.println("Iniciando codificação...");
 		try {
@@ -177,7 +176,6 @@ public class PpmCod {
 						
 						if (palavraAtual[j].length() == 0) continue;
 						
-						// TODO: codificar o símbolo pelo aritmetico antes de atualizar o modelo
 						comprime (codificador[j], palavraAtual[j], arvores[j], j);
 						
 						/*if (!arvores[j].procura(palavraAtual[j]))
@@ -194,10 +192,10 @@ public class PpmCod {
 						//ppm(bits[j], contextos.get(j), maiorContexto);
 					}
 				}
-				for (int i = 0; i < numeroDeGruposDeBits; i++) {
+				//for (int i = 0; i < numeroDeGruposDeBits; i++) {
 					//arvores[i].percorrePorNivel();
 					//arvores[i].percorre();
-				}
+				//}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -205,7 +203,7 @@ public class PpmCod {
 		
 		tempoDepois = System.currentTimeMillis();
 		
-		System.out.println("Codificação concluída em: " + (tempoDepois - tempoAntes) + "ms");
+		System.out.println("Codificação concluída em: " + (tempoDepois - tempoAntes) / 1000.0 + "s");
 		
 		try {
 			fis.close();
