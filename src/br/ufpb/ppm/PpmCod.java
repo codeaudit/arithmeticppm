@@ -25,6 +25,7 @@ public class PpmCod {
 	private static String palavraAtual[];
 	private static ArithEncoder codificador[];
 	private static FileOutputStream fos[];
+	private static FileOutputStream fosFinal;
 	private static Vector<Vector<Character>> valoresCodificados;
 	private static int totalContextoMenosUm[];
 	
@@ -100,6 +101,7 @@ public class PpmCod {
 		fos = new FileOutputStream[numeroDeGruposDeBits];
 		valoresCodificados = new Vector<Vector<Character>> ();
 		totalContextoMenosUm = new int[numeroDeGruposDeBits];
+		File temporario = null;
 		long tempoAntes, tempoDepois;
 		
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
@@ -117,11 +119,21 @@ public class PpmCod {
 			
 			//System.out.println("Nome: " + nome);
 			String nome = (numeroDeGruposDeBits > 1) ?
-					arquivoDeSaida + i + ".txt" :
-						arquivoDeSaida + ".txt";
+					arquivoDeSaida + i :
+						arquivoDeSaida;
 			try {
-				fos[i] = new FileOutputStream(nome);
+				if (i == 0) {
+					temporario = File.createTempFile(nome, "tmp");
+					temporario.deleteOnExit();
+					fos[i] = new FileOutputStream(temporario);
+					fosFinal = new FileOutputStream(nome + ".txt");
+				} else
+					fos[i] = new FileOutputStream (nome + ".txt");
 			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				System.err.println("Problema na criação dos arquivos de saída.");
+				System.exit(0);
+			} catch (IOException e) {
 				e.printStackTrace();
 				System.err.println("Problema na criação dos arquivos de saída.");
 				System.exit(0);
@@ -158,7 +170,7 @@ public class PpmCod {
 							int aux = (dataBlock[i] >= 0) ? (dataBlock[i] << 8) | chAux
 							                              : ((256 + dataBlock[i]) << 8) | chAux; 
 							chAux = (char) aux;
-							bytesLidos++;
+							//bytesLidos++;
 						}
 						
 						/*System.out.println("Char: " + (int) dataBlock[i]);
@@ -206,20 +218,20 @@ public class PpmCod {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		tempoDepois = System.currentTimeMillis();
-		
-		System.out.println("Codificação concluída em: " + (tempoDepois - tempoAntes) / 1000.0 + "s");
 		
 		try {
 			fis.close();
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
 				codificador[i].close();
+				fos[i].close();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}			
+		}
+		
+		escreveArquivo (fosFinal, fos[0], temporario, bytesLidos);
+		System.out.println("Codificação concluída em: " + (tempoDepois - tempoAntes) / 1000.0 + "s");
 	}
 	
 	public static void comprime(ArithEncoder aritmetico, String s, Trie arvore, int j) {
@@ -317,6 +329,69 @@ public class PpmCod {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void escreveArquivo (FileOutputStream fosFinal, FileOutputStream fosTemp, File temp, int bytesLidos) {
+		byte aux;
+		int aux2;
+		
+		//System.out.println(bytesLidos);
+		
+		byte dataBlock[] = new byte[1024];
+		int numeroLidos;
+		try {
+			aux2 = bytesLidos >> 24; // byte mais significativo
+			fosFinal.write(aux2);
+			//System.out.println(aux2);
+			aux2 = bytesLidos >> 16 & 0xFF;
+			fosFinal.write(aux2);
+			//System.out.println(aux2);
+			aux2 = bytesLidos >> 8 & 0xFF;
+			fosFinal.write(aux2);
+			//System.out.println(aux2);
+			aux2 = bytesLidos & 0xFF;
+			fosFinal.write(aux2);
+			//System.out.println(aux2);
+			aux = (byte) maiorContexto;
+			fosFinal.write(aux);
+			aux = (byte) tamanhoDoGrupoDeBits;
+			fosFinal.write(aux);
+			
+			FileInputStream lerTemp = new FileInputStream(temp);
+			
+			while ((numeroLidos = lerTemp.read(dataBlock)) != -1) {
+				for (int i = 0; i < numeroLidos; i++) {
+					fosFinal.write(dataBlock[i]);
+				}
+			}
+			
+			fosTemp.close();
+			fosFinal.close();
+			lerTemp.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Problema na escrita.");
+			System.exit(0);
+		}
+		
+		/*byte dados[] = new byte[6];
+		
+		try {
+			FileInputStream teste = new FileInputStream("saida.txt");
+			teste.read(dados);
+			
+			int testando = 0;
+			testando += dados[0] << 24;
+			testando += dados[1] << 16;
+			testando += dados[2] << 8;
+			testando += dados[3];
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 	
 	/**

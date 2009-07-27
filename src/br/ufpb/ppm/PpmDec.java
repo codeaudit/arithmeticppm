@@ -14,21 +14,23 @@ import com.colloquial.arithcode.BitInput;
 public class PpmDec {
 	private static int maiorContexto;
 	private static int tamanhoDoGrupoDeBits;
+	private static int totalBytes;
 
 	private static String arquivoDeSaida;
 	private static String arquivosDeEntrada[];
+	private static final int TAMANHO_CABECALHO = 6;
 
 	//posicao dos argumentos do programa
-	private static final int POSICAO_ARGUMENTO_MAIOR_CONTEXTO = 1;
-	private static final int POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS = 2;
-	private static final int POSICAO_ARGUMENTO_SAIDA = 3;
-
+	private static final int POSICAO_ARGUMENTO_SAIDA = 1;
+	
 	private static Trie arvores[];
 	private static String palavraAtual[];
 	private static ArithDecoder decodificador[];
 	private static FileInputStream fis[];
 	//private static File file[];
 	private static FileOutputStream fos;
+	private static String nomeTemp;
+	private static File temporario;
 	private static Vector<Vector<Character>> valoresDecodificados;
 	private static int totalContextoMenosUm[];
 	private static char caracteres[];
@@ -46,12 +48,17 @@ public class PpmDec {
 	public static void main(String[] args) {
 		int aux;
 
-		if (args.length < 3 || args.length > 4) {
+		/*if (args.length < 3 || args.length > 4) {
 			System.out.println("Uso: PpmDec arquivo(nome do primeiro arquivo caso sejam vários) maior_contexto tamanho do grupo de bits [nome do arquivo de saída (sem extensão)]");
+			System.exit(0);
+		}*/
+		
+		if (args.length < 1 || args.length > 2) {
+			System.out.println("Uso: PpmDec arquivo(nome do primeiro arquivo caso sejam vários) [nome do arquivo de saída (sem extensão)]");
 			System.exit(0);
 		}
 
-		aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
+		/*aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
 		if (aux >= 0 && aux < 128) {
 			maiorContexto = aux;
 		} else {
@@ -65,6 +72,48 @@ public class PpmDec {
 		else {
 			System.err.println("Número inválido para o tamanho do grupo de bits");
 			System.err.println("Números válidos: 1, 2, 4, 8 ou 16");
+			System.exit(0);
+		}*/
+		
+		try {
+			FileInputStream leitorAux = new FileInputStream (args[0]);
+			byte cabecalho[] = new byte[TAMANHO_CABECALHO];
+			int lidos;
+			lidos = leitorAux.read(cabecalho);
+			if (lidos != 6) {
+				System.err.println("Problema na leitura.");
+				System.exit(0);
+			}
+			
+			//totalBytes = (int) (cabecalho[0] << 24) | (cabecalho[1] << 16) | (cabecalho[2] << 8) | cabecalho[3];
+			totalBytes = 0;
+			totalBytes += (cabecalho[0] >= 0) ? cabecalho[0] << 24 : (256 + cabecalho[0]) << 24;
+			totalBytes += (cabecalho[1] >= 0) ? cabecalho[1] << 16 : (256 + cabecalho[1]) << 16;
+			totalBytes += (cabecalho[2] >= 0) ? cabecalho[2] << 8 : (256 + cabecalho[2]) << 8;
+			totalBytes += (cabecalho[3] >= 0) ? cabecalho[3] : 256 + cabecalho[3];
+			maiorContexto = cabecalho[4];
+			tamanhoDoGrupoDeBits = cabecalho[5];
+			
+			aux = args[0].lastIndexOf('.');
+			nomeTemp = (aux != -1) ?
+					args[0].substring(0, aux) : args[0];
+				
+			temporario = File.createTempFile(nomeTemp, ".tmp");
+			temporario.deleteOnExit();
+			FileOutputStream copiaTemp = new FileOutputStream (temporario);
+			
+			copiaConteudo (copiaTemp, leitorAux);
+			
+			copiaTemp.close();
+			leitorAux.close();
+
+		} catch (FileNotFoundException e2) {
+			e2.printStackTrace();
+			System.err.println("Arquivo não encontrado.");
+			System.exit(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Problema na leitura.");
 			System.exit(0);
 		}
 
@@ -125,7 +174,10 @@ public class PpmDec {
 			//System.out.println("Arquivo de entrada: " + arquivosDeEntrada[i]);
 
 			try {
-				fis[i] = new FileInputStream(arquivosDeEntrada[i]);
+				if (i == 0)
+					fis[i] = new FileInputStream(temporario);
+				else
+					fis[i] = new FileInputStream(arquivosDeEntrada[i]);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 				System.err.println("Problema na abertura dos arquivos de entrada.");
@@ -151,7 +203,8 @@ public class PpmDec {
 		int lht[] = new int[3];
 		Vector <PseudoNo> contextos;
 
-		while (!decodificador[0].endOfStream()) { // o final da stream de todos os decodificadores ocorrera no mesmo momento
+		while (totalBytes > 0) { // o final da stream de todos os decodificadores ocorrera no mesmo momento
+			totalBytes--;
 			
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
 				//System.out.println(palavraAtual[i]);
@@ -258,6 +311,21 @@ public class PpmDec {
 		
 		tempoDepois = System.currentTimeMillis();
 		System.out.println("Decodificação concluída em: " + (tempoDepois - tempoAntes) / 1000.0 + "s");
+	}
+	
+	public static void copiaConteudo (FileOutputStream escreve, FileInputStream le) {
+		byte dataBlock[] = new byte[1024];
+		int lidos;
+		try {
+			while ((lidos = le.read(dataBlock)) != -1) {
+				for (int i = 0; i < lidos; i++)
+					escreve.write(dataBlock[i]);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Problema na leitura.");
+			System.exit(0);
+		}
 	}
 	
 	public static char decodificaContextoMenosUm (int i) {
