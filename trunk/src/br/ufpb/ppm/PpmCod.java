@@ -170,7 +170,7 @@ public class PpmCod {
 							int aux = (dataBlock[i] >= 0) ? (dataBlock[i] << 8) | chAux
 							                              : ((256 + dataBlock[i]) << 8) | chAux; 
 							chAux = (char) aux;
-							//bytesLidos++;
+							bytesLidos++;
 						}
 						
 						/*System.out.println("Char: " + (int) dataBlock[i]);
