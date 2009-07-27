@@ -151,7 +151,8 @@ public class Trie {
 					//System.out.println("Dentro. String: " +s + " Exclusao: " + exclusao);
 					if ((indiceAux = procuraVetor(current.filhos, s.charAt(i), exclusao)) == -1) { // retorna o escape
 						//System.out.println("Dentro. String: " +s + " Exclusao: " + exclusao);
-						int totalDeFilhosExclusao = getTotalDeFilhosExclusao(current, passagem);
+						int totalDeFilhosExclusao = (passagem.length() > 0) ?
+								getTotalDeFilhosExclusao(current, passagem) : current.totalDeFilhos;
 						retorno[0] = totalDeFilhosExclusao;
 						retorno[1] = totalDeFilhosExclusao + current.totalEscape;
 						retorno[2] = totalDeFilhosExclusao + current.totalEscape;
@@ -170,7 +171,8 @@ public class Trie {
 
 						// retorna o escape
 						//juntaStrings(passagem, exclusao);
-						int totalDeFilhosExclusao = getTotalDeFilhosExclusao(current, passagem);
+						int totalDeFilhosExclusao = (passagem.length() > 0) ?
+								getTotalDeFilhosExclusao(current, passagem) : current.totalDeFilhos;
 						retorno[0] = totalDeFilhosExclusao;
 						retorno[1] = totalDeFilhosExclusao + current.totalEscape;
 						retorno[2] = totalDeFilhosExclusao + current.totalEscape;
@@ -230,6 +232,8 @@ public class Trie {
 		int total = no.totalDeFilhos;
 		Node aux;
 		String aux2;
+		
+		if (exclusao.length() == 0) return total;
 		for (int i = 0; i < no.filhos.size(); i++) {
 			aux2 = "";
 			aux = no.filhos.get(i);
@@ -243,7 +247,8 @@ public class Trie {
 	public int getTotalDeFilhosExclusaoEAtualiza (Node no, StringBuffer exclusao, StringBuffer exclusaoAux) {
 		int total = no.totalDeFilhos;
 		//System.out.println("Total: " + total);
-		StringBuffer stringAux = new StringBuffer();
+		if (exclusaoAux == null) exclusaoAux = new StringBuffer();
+		
 		Node aux;
 		String aux2;
 		for (int i = 0; i < no.filhos.size(); i++) {
@@ -252,11 +257,16 @@ public class Trie {
 			//if (aux.contador == 0) continue;
 			aux2 += aux.conteudo;
 			
-			stringAux.append(aux.conteudo);
-			if (exclusao.indexOf(aux2) != -1)
+			if (exclusao.length() == 0) {
+				exclusaoAux.append(aux.conteudo);
+				continue;
+			}
+			if (exclusao.indexOf(aux2) != -1) {
 				total--;
+			} else
+				exclusaoAux.append(aux.conteudo);
 		}
-		juntaStrings(exclusaoAux, stringAux);
+		
 		return total;
 	}
 	
@@ -423,45 +433,42 @@ public class Trie {
 	public int [] retornaNoPeloLow (Node no, int retorno, char caracteres[], int j, StringBuffer exclusao) {
 		int lht[] = new int [3];
 		int total = 0;
-		int totalDeFilhos = no.totalDeFilhos;
+		//int totalDeFilhos = no.totalDeFilhos;
 		String stringAux;
 		int indiceAux;
 		//System.out.println(retorno);
-		boolean encontrado = false;
+		//boolean encontrado = false;
 		
 		//System.out.println("Qtd filhos: " + no.filhos.size());		
 		for (int i = 0; i < no.filhos.size(); i++) {
 			Node aux = no.filhos.get(i);
 			//System.out.print("Mostrando filho: ");
 			//System.out.println((int) aux.conteudo);
-			stringAux = "";
-			stringAux += aux.conteudo;
-			indiceAux = exclusao.indexOf(stringAux);
-			//System.out.println("Tamanho exclusao: " + exclusao.length() + "\\" + indiceAux);
-			if (indiceAux != -1) {
-				totalDeFilhos -= aux.contador;
-				continue;
+			if (exclusao.length() > 0) {
+				stringAux = "";
+				stringAux += aux.conteudo;
+				indiceAux = exclusao.indexOf(stringAux);
+				//System.out.println("Tamanho exclusao: " + exclusao.length() + "\\" + indiceAux);
+				if (indiceAux != -1) {
+					//totalDeFilhos -= aux.contador;
+					continue;
+				}
 			}
 			//System.out.println("Tamanho exclusao: " + exclusao.length() + "\\" + indiceAux);
 			if (retorno >= total && retorno < total + aux.contador) {
-				if (!encontrado) {
-					encontrado = true;
-					lht[1] = aux.contador;
+				lht[0] = total;
+				lht[1] = total + aux.contador;
+				lht[2] = 0; // recebera valor no programa principal
 
-					if (caracteres.length > j)
-						caracteres[j] = aux.conteudo;
-					break;
-					//return lht;
-				}
+				if (caracteres.length > j)
+					caracteres[j] = aux.conteudo;
+				return lht;
 			}
-			if (!encontrado)
-				total += aux.contador;
+			
+			total += aux.contador;
 			
 		}
 		
-		lht[0] = total;
-		lht[1] += total;
-		lht[2] = 0;
 		return lht;
 	}
 	

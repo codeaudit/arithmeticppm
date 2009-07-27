@@ -235,8 +235,10 @@ public class PpmDec {
 							ch = decodificaContextoMenosUm(i);
 						}
 					} else {
+						//System.out.println(System.currentTimeMillis() - tempoAntes);
 						lht = arvores[i].retornaNoPeloLow(contextoAtual, retorno, caracteres, i, exclusao);
 						lht[2] = totalDeFilhosExclusao + contextoAtual.totalEscape;
+						//System.out.println(System.currentTimeMillis() - tempoAntes);
 
 						ch = caracteres[i];
 						try {
@@ -251,7 +253,11 @@ public class PpmDec {
 						break;
 						//ch = arvores[i].retornaSimbolo (retorno);
 					}
+					//System.out.println("Antes de juntar");
+					//System.out.println(System.currentTimeMillis() - tempoAntes);
 					arvores[i].juntaStrings(exclusao, exclusaoAux);
+					//System.out.println("Depois de juntar");
+					//System.out.println(System.currentTimeMillis() - tempoAntes);
 				}
 
 				for (int j = 0; j < contextos.size(); j++) {
@@ -314,7 +320,8 @@ public class PpmDec {
 		int retorno = decodificador[i].getCurrentSymbolCount(totalContextoMenosUm[i]);
 		//System.out.println(retorno);
 		char ch = encontraSimboloMenosUm(retorno, decodificados);
-		decodificados.add(ch);
+		//decodificados.add(ch);
+		insereOrdenado(decodificados, ch);
 		
 		caracteres[i] = ch;
 		//System.out.println("Ch dentro: " + (int) ch);
@@ -340,16 +347,18 @@ public class PpmDec {
 
 		//System.out.print("Simbolo: " + simbolo + "|");
 
-		Collections.sort(vetorDecodificados);
+		//Collections.sort(vetorDecodificados);
 
 		for (int i = 0; i < vetorDecodificados.size(); i++) {
 			//System.out.print(" " + (int)vetorDecodificados.get(i).charValue());
 			if (vetorDecodificados.get(i).charValue() <= aux) {
 				aux++;
-			}
+				continue;
+			} else
+				break;
 		}
 		//System.out.println(" valor final: " + (int)aux);
-		if (vetorDecodificados.indexOf(aux) != -1) aux++;
+		//if (vetorDecodificados.indexOf(aux) != -1) aux++;
 		return aux;
 	}
 
@@ -391,5 +400,16 @@ public class PpmDec {
 			aux += aux2 << (j * passo);
 		}
 		return aux;
+	}
+	
+	public static void insereOrdenado (Vector<Character> vetor, char ch) {
+		for (int i = 0; i < vetor.size(); i++) {
+			int aux = (int) vetor.get(i).charValue();
+			if (ch < aux) {
+				vetor.add(i, ch);
+				return;
+			}
+		}
+		vetor.add(ch);
 	}
 }
