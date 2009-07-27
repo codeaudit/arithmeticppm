@@ -32,7 +32,7 @@ public class PpmCod {
 	/**
 	 * 
 	 * O programa deve ser chamado passando-se parâmetros.<br/>
-	 * Uso: PpmCod <i>arquivo</i> <i>[maior contexto]</i> <i>[tamanho do grupo de bits]</i>
+	 * Uso: PpmCod <i>arquivo</i> <i>[maior contexto]</i> <i>[tamanho do grupo de bits]</i> <i>[nome do arquivo de saída (sem extensão)]</i>
 	 * 
 	 * @param args  
 	 * 
@@ -41,7 +41,7 @@ public class PpmCod {
 		
 		if (args.length < 1 || args.length > 4) {
 			System.out.println("Uso: PpmCod arquivo maior_contexto tamanho do grupo de bits [nome do arquivo de saída (sem extensão)]");
-			System.out.println("Uso: PpmCod arquivo maior_contexto [tamanho do grupo de bits]");
+			System.out.println(" ou: PpmCod arquivo maior_contexto [tamanho do grupo de bits]");
 			System.out.println(" ou: PpmCod arquivo [maior contexto]");
 			System.out.println(" ou: PpmCod arquivo");
 			System.exit(0);
@@ -120,7 +120,6 @@ public class PpmCod {
 			try {
 				fos[i] = new FileOutputStream(nome);
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.err.println("Problema na criação dos arquivos de saída.");
 				System.exit(0);
@@ -239,6 +238,8 @@ public class PpmCod {
 		else if ((pai.totalEscape > 0 && lht[1] == lht[2])) { // deve ser codificado um escape
 			//System.out.println("Codificando escape em " + s);
 			try {
+				System.out.println("Codificando: ");
+				TestTrie.mostra(lht);
 				aritmetico.encode(lht);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -257,10 +258,13 @@ public class PpmCod {
 		else {
 			//System.out.println("Codificando " +s);
 			try {
+				System.out.println("Codificando: ");
+				TestTrie.mostra(lht);
 				aritmetico.encode(lht);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				System.err.println("Problema na codificação.");
+				System.exit(0);
 			}
 			
 			for(int k = 0; k < s.length()-1; k++) {
@@ -272,7 +276,6 @@ public class PpmCod {
 	
 	// comprimindo para o contexto menos um - aparentemente funciona	
 	public static void comprimeContextoMenosUm (ArithEncoder aritmetico, String s, int j) {
-		//TODO: criar metodo de comprimir na ignorancia
 		if (s.length() > 1) return;
 		
 		Vector<Character> valores = valoresCodificados.get(j);
@@ -296,6 +299,8 @@ public class PpmCod {
 		//System.out.println(lht[0] + " " + lht[1] + " " +lht[2]);
 		
 		try {
+			System.out.println("Codificando: ");
+			TestTrie.mostra(lht);
 			aritmetico.encode(lht);
 		} catch (IOException e) {
 			e.printStackTrace();

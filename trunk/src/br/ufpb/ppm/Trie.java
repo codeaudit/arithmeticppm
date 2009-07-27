@@ -1,5 +1,7 @@
 package br.ufpb.ppm;
 
+import java.util.Vector;
+
 import sun.misc.Queue;
 
 public class Trie {
@@ -193,6 +195,25 @@ public class Trie {
 		no.totalDeFilhos++;
 		no.incrementaEscape(maxCaracteres);
 	}
+	
+	public void buscaEInsereEmNo (Node no, char insere) {
+		Node aux = new Node(insere, inicializaVetor);
+		Node aux2;
+		
+		int indiceAux = no.filhos.indexOf(aux);
+		if (indiceAux != -1) {
+			aux2 = no.filhos.get(indiceAux);
+			aux2.contador++;
+			no.totalDeFilhos++;
+			return;
+		}
+		
+		// se nao for encontrado, insere
+		aux.marcador = true;
+		no.filhos.add(aux);
+		no.totalDeFilhos++;
+		no.incrementaEscape(maxCaracteres);
+	}
 
 	public void percorre() {
 		percorre(raiz, 0);
@@ -265,4 +286,62 @@ public class Trie {
 			}
 		}
 	}
+	
+	public Vector<PseudoNo> retornaContextos (String s, Vector<PseudoNo> vetor) {
+		Vector<PseudoNo> retorno;
+		if (vetor == null)
+			retorno = new Vector<PseudoNo> ();
+		else
+			retorno = vetor;
+		
+		Node current = raiz;
+		Node pai = raiz;
+		int indiceAux;
+
+		while (current != null) {
+			for (int i = 0; i < s.length(); i++) {
+				if ((indiceAux = current.filhos.indexOf(new Node (s.charAt(i)))) == -1) {
+					return null; // string nao encontrada
+				} else {
+					pai = current;
+					current = current.filhos.get(indiceAux);
+					// System.out.println("Caracter \"" + current.content
+					// + "\" encontrado");
+				}
+			}
+			
+			retorno.add(new PseudoNo(current));
+			if (s.length() > 1)
+				return retornaContextos (s.substring(1), retorno);
+			else if (s.length() == 1) {
+				retorno.add(new PseudoNo (pai));
+				return retorno;
+			} else {
+				return retorno;
+			}
+			
+		}
+		return null;
+	}
+	
+	public int [] retornaNoPeloLow (Node no, int retorno, char caracteres[], int j) {
+		int lht[] = new int [3];
+		int total = 0;
+		for (int i = 0; i < no.filhos.size(); i++) {
+			Node aux = no.filhos.get(i);
+			if (retorno >= total && retorno < total + aux.contador) {
+				lht[0] = total;
+				lht[1] = total+aux.contador;
+				lht[2] = no.totalDeFilhos + no.totalEscape;
+				
+				if (caracteres.length > j)
+					caracteres[j] = aux.conteudo;
+				return lht;
+			}
+			total += aux.contador;
+		}
+		
+		return null;
+	}
+	
 }
