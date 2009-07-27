@@ -40,7 +40,7 @@ public class PpmDec {
 	/**
 	 * 
 	 * O programa deve ser chamado passando-se parâmetros que foram utilizados na codificação.<br/>
-	 * Uso: PpmDec <i>arquivo</i> <i>maior contexto</i> <i>tamanho do grupo de bits</i> <i>[nome do arquivo de saída (sem extensão)]</i>
+	 * Uso: PpmDec <i>arquivo</i> <i>maior contexto</i> <i>tamanho do grupo de bits</i> <i>[nome do arquivo de saída]</i>
 	 * 
 	 * @param args  
 	 * 
@@ -57,23 +57,6 @@ public class PpmDec {
 			System.out.println("Uso: PpmDec arquivo(nome do primeiro arquivo caso sejam vários) [nome do arquivo de saída (sem extensão)]");
 			System.exit(0);
 		}
-
-		/*aux = Integer.parseInt(args[POSICAO_ARGUMENTO_MAIOR_CONTEXTO]);
-		if (aux >= 0 && aux < 128) {
-			maiorContexto = aux;
-		} else {
-			System.err.println("Contexto inválido.");
-			System.exit(0);
-		}
-
-		aux = Integer.parseInt(args[POSICAO_ARGUMENTO_TAMANHO_DO_GRUPO_DE_BITS]);
-		if (aux == 1 || aux == 2 || aux == 4 || aux == 8 || aux == 16)
-			tamanhoDoGrupoDeBits = aux;
-		else {
-			System.err.println("Número inválido para o tamanho do grupo de bits");
-			System.err.println("Números válidos: 1, 2, 4, 8 ou 16");
-			System.exit(0);
-		}*/
 
 		try {
 			FileInputStream leitorAux = new FileInputStream (args[0]);
@@ -198,7 +181,6 @@ public class PpmDec {
 
 		int retorno;
 		char ch = 0;
-		Vector<Character> decodificados;
 		byte byteAux;
 		int lht[] = new int[3];
 		Vector <PseudoNo> contextos;
@@ -208,24 +190,7 @@ public class PpmDec {
 
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
 				//System.out.println(palavraAtual[i]);
-				/*if (palavraAtual[i].length() == 0) {
-					ch = decodificaContextoMenosUm(i);
-
-					if (palavraAtual[i].length() <= maiorContexto) {
-						palavraAtual[i] += ch;
-					} else {
-						palavraAtual[i] = (maiorContexto > 0) ? palavraAtual[i].substring(1) + ch : "";
-					}
-
-					//TODO: retornar um PseudoNo aqui para evitar uma segunda busca
-					if (!arvores[i].procura(palavraAtual[i]))
-						arvores[i].insere(palavraAtual[i]);
-
-					continue;
-				}*/
-
-				//System.out.println(palavraAtual[i]);
-
+				
 				contextos = null;
 				contextos = arvores[i].retornaContextos(palavraAtual[i], contextos);
 				if (contextos == null) {
@@ -341,12 +306,7 @@ public class PpmDec {
 		//System.out.println(retorno);
 		char ch = encontraSimboloMenosUm(retorno, decodificados);
 		decodificados.add(ch);
-		//palavraAtual[i] += ch;
-
-		//TODO: retornar um PseudoNo aqui para evitar uma segunda busca
-		//if (!arvores[i].procura())
-		//	arvores[i].insere(palavraAtual[i]);
-
+		
 		caracteres[i] = ch;
 		//System.out.println("Ch dentro: " + (int) ch);
 		int lht [] = new int[3];
