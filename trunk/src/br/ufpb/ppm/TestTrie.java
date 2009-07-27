@@ -87,8 +87,9 @@ public class TestTrie {
 	}
 
 	public static void mostra (int [] array) {
+		System.out.print("Valores: ");
 		for (int i = 0; i < array.length; i++)
-			System.out.println("Valor na posição " + i + ": " + array[i]);
+			System.out.print(array[i] + " ");
 		System.out.println();
 	}
 
