@@ -22,7 +22,7 @@ public class PpmDec {
 
 	//posicao dos argumentos do programa
 	private static final int POSICAO_ARGUMENTO_SAIDA = 1;
-	
+
 	private static Trie arvores[];
 	private static String palavraAtual[];
 	private static ArithDecoder decodificador[];
@@ -34,7 +34,7 @@ public class PpmDec {
 	private static Vector<Vector<Character>> valoresDecodificados;
 	private static int totalContextoMenosUm[];
 	private static char caracteres[];
-	
+
 	static int parada = 0;
 
 	/**
@@ -52,7 +52,7 @@ public class PpmDec {
 			System.out.println("Uso: PpmDec arquivo(nome do primeiro arquivo caso sejam vários) maior_contexto tamanho do grupo de bits [nome do arquivo de saída (sem extensão)]");
 			System.exit(0);
 		}*/
-		
+
 		if (args.length < 1 || args.length > 2) {
 			System.out.println("Uso: PpmDec arquivo(nome do primeiro arquivo caso sejam vários) [nome do arquivo de saída (sem extensão)]");
 			System.exit(0);
@@ -74,7 +74,7 @@ public class PpmDec {
 			System.err.println("Números válidos: 1, 2, 4, 8 ou 16");
 			System.exit(0);
 		}*/
-		
+
 		try {
 			FileInputStream leitorAux = new FileInputStream (args[0]);
 			byte cabecalho[] = new byte[TAMANHO_CABECALHO];
@@ -84,7 +84,7 @@ public class PpmDec {
 				System.err.println("Problema na leitura.");
 				System.exit(0);
 			}
-			
+
 			//totalBytes = (int) (cabecalho[0] << 24) | (cabecalho[1] << 16) | (cabecalho[2] << 8) | cabecalho[3];
 			totalBytes = 0;
 			totalBytes += (cabecalho[0] >= 0) ? cabecalho[0] << 24 : (256 + cabecalho[0]) << 24;
@@ -93,19 +93,19 @@ public class PpmDec {
 			totalBytes += (cabecalho[3] >= 0) ? cabecalho[3] : 256 + cabecalho[3];
 			maiorContexto = cabecalho[4];
 			tamanhoDoGrupoDeBits = cabecalho[5];
-			
+
 			aux = args[0].lastIndexOf('.');
 			nomeTemp = (aux != -1) ?
 					args[0].substring(0, aux) : args[0];
-				
-			temporario = File.createTempFile(nomeTemp, ".tmp");
-			temporario.deleteOnExit();
-			FileOutputStream copiaTemp = new FileOutputStream (temporario);
-			
-			copiaConteudo (copiaTemp, leitorAux);
-			
-			copiaTemp.close();
-			leitorAux.close();
+
+					temporario = File.createTempFile(nomeTemp, ".tmp");
+					temporario.deleteOnExit();
+					FileOutputStream copiaTemp = new FileOutputStream (temporario);
+
+					copiaConteudo (copiaTemp, leitorAux);
+
+					copiaTemp.close();
+					leitorAux.close();
 
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
@@ -205,34 +205,34 @@ public class PpmDec {
 
 		while (totalBytes > 0) { // o final da stream de todos os decodificadores ocorrera no mesmo momento
 			totalBytes--;
-			
+
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
 				//System.out.println(palavraAtual[i]);
 				/*if (palavraAtual[i].length() == 0) {
 					ch = decodificaContextoMenosUm(i);
-					
+
 					if (palavraAtual[i].length() <= maiorContexto) {
 						palavraAtual[i] += ch;
 					} else {
 						palavraAtual[i] = (maiorContexto > 0) ? palavraAtual[i].substring(1) + ch : "";
 					}
-					
+
 					//TODO: retornar um PseudoNo aqui para evitar uma segunda busca
 					if (!arvores[i].procura(palavraAtual[i]))
 						arvores[i].insere(palavraAtual[i]);
-					
+
 					continue;
 				}*/
-				
+
 				//System.out.println(palavraAtual[i]);
-				
+
 				contextos = null;
 				contextos = arvores[i].retornaContextos(palavraAtual[i], contextos);
 				if (contextos == null) {
 					System.err.println("Problema na decodificação.");
 					System.exit(0);
 				}
-				
+
 				for (int j = 0; j < contextos.size(); j++) {
 					Node contextoAtual = contextos.get(j).no;
 					if (contextoAtual.totalDeFilhos == 0) {
@@ -240,12 +240,12 @@ public class PpmDec {
 							ch = decodificaContextoMenosUm(i);
 						continue;
 					}
-					
+
 					//if (++parada == 100) System.exit(0);
 					//++parada;
-					
+
 					if (decodificador[i].endOfStream()) continue;
-					
+
 					retorno = decodificador[i].getCurrentSymbolCount(contextoAtual.totalDeFilhos+contextoAtual.totalEscape);
 					if (retorno >= contextoAtual.totalDeFilhos) { // escape
 						lht[0] = contextoAtual.totalDeFilhos;
@@ -264,7 +264,7 @@ public class PpmDec {
 						}
 					} else {
 						lht = arvores[i].retornaNoPeloLow(contextoAtual, retorno, caracteres, i);
-						
+
 						ch = caracteres[i];
 						try {
 							//System.out.println("Decodificando 2 (" +i + "): ");
@@ -279,40 +279,47 @@ public class PpmDec {
 						//ch = arvores[i].retornaSimbolo (retorno);
 					}
 				}
-				
+
 				for (int j = 0; j < contextos.size(); j++) {
 					arvores[i].buscaEInsereEmNo(contextos.get(j).no, ch);
 					//arvores[i].percorre();
 				}
-				
+
 				if (maiorContexto > 0 && palavraAtual[i].length() < maiorContexto) {
 					palavraAtual[i] += ch;
 				} else {
 					palavraAtual[i] = (maiorContexto > 0) ? palavraAtual[i].substring(1) + ch : "";
 				}
 				//System.out.println(palavraAtual[i]);
-				
+
 			}
-			
-			if (tamanhoDoGrupoDeBits > 8) {
-				escreveDoisBytes(caracteres[0], fos);
-			} else {
-				byteAux = juntaArray(caracteres);
-				try {
+
+			try {
+
+				if (tamanhoDoGrupoDeBits > 8) {
+					if (totalBytes > 0) {
+						totalBytes--;
+						escreveDoisBytes(caracteres[0], fos);
+					} else {
+						int escreveAux = caracteres[0] & 0xFF; // descarta o byte mais significativo
+						fos.write(escreveAux);
+					}
+				} else {
+					byteAux = juntaArray(caracteres);
 					fos.write(byteAux);
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.err.println("Problema na escrita.");
-					System.exit(0);
 				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.err.println("Problema na escrita.");
+				System.exit(0);
 			}
 			//System.exit(0);
 		}
-		
+
 		tempoDepois = System.currentTimeMillis();
 		System.out.println("Decodificação concluída em: " + (tempoDepois - tempoAntes) / 1000.0 + "s");
 	}
-	
+
 	public static void copiaConteudo (FileOutputStream escreve, FileInputStream le) {
 		byte dataBlock[] = new byte[1024];
 		int lidos;
@@ -327,7 +334,7 @@ public class PpmDec {
 			System.exit(0);
 		}
 	}
-	
+
 	public static char decodificaContextoMenosUm (int i) {
 		Vector <Character> decodificados = valoresDecodificados.get(i);
 		int retorno = decodificador[i].getCurrentSymbolCount(totalContextoMenosUm[i]);
@@ -335,7 +342,7 @@ public class PpmDec {
 		char ch = encontraSimboloMenosUm(retorno, decodificados);
 		decodificados.add(ch);
 		//palavraAtual[i] += ch;
-		
+
 		//TODO: retornar um PseudoNo aqui para evitar uma segunda busca
 		//if (!arvores[i].procura())
 		//	arvores[i].insere(palavraAtual[i]);
@@ -361,11 +368,11 @@ public class PpmDec {
 
 	public static char encontraSimboloMenosUm (int simbolo, Vector<Character> vetorDecodificados) {
 		char aux = (char) simbolo;
-		
+
 		//System.out.print("Simbolo: " + simbolo + "|");
-		
+
 		Collections.sort(vetorDecodificados);
-		
+
 		for (int i = 0; i < vetorDecodificados.size(); i++) {
 			//System.out.print(" " + (int)vetorDecodificados.get(i).charValue());
 			if (vetorDecodificados.get(i).charValue() <= aux) {
@@ -376,7 +383,7 @@ public class PpmDec {
 		if (vetorDecodificados.indexOf(aux) != -1) aux++;
 		return aux;
 	}
-	
+
 	public static void escreveDoisBytes (char ch, FileOutputStream fos) {
 		try {
 			int aux = ch;
@@ -391,11 +398,11 @@ public class PpmDec {
 			System.exit(0);
 		}
 	}
-	
+
 	public static byte juntaArray (char caracteres[]) {
 		if (caracteres.length == 1)
 			return (byte) caracteres[0];
-		
+
 		byte aux = 0;
 		byte aux2;
 		int tamanho = caracteres.length;
@@ -409,7 +416,7 @@ public class PpmDec {
 		else {
 			return 0; // nao vai acontecer!
 		}
-		
+
 		for (int i = 0, j = tamanho - 1; i < tamanho; i++, j--) {
 			aux2 = (byte) caracteres[i];
 			aux += aux2 << (j * passo);
