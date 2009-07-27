@@ -28,6 +28,8 @@ public class PpmCod {
 	private static Vector<Vector<Character>> valoresCodificados;
 	private static int totalContextoMenosUm[];
 	
+	static int parada = 0;
+	
 	
 	/**
 	 * 
@@ -177,6 +179,11 @@ public class PpmCod {
 						
 						comprime (codificador[j], palavraAtual[j], arvores[j], j);
 						
+						//if (++parada == 100) {
+							//arvores[j].percorre();
+							//System.exit(0);
+						//}
+						
 						/*if (!arvores[j].procura(palavraAtual[j]))
 							arvores[j].insere(palavraAtual[j]);
 						
@@ -238,8 +245,8 @@ public class PpmCod {
 		else if ((pai.totalEscape > 0 && lht[1] == lht[2])) { // deve ser codificado um escape
 			//System.out.println("Codificando escape em " + s);
 			try {
-				System.out.println("Codificando: ");
-				TestTrie.mostra(lht);
+				//System.out.println("Codificando: ");
+				//TestTrie.mostra(lht);
 				aritmetico.encode(lht);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -258,8 +265,8 @@ public class PpmCod {
 		else {
 			//System.out.println("Codificando " +s);
 			try {
-				System.out.println("Codificando: ");
-				TestTrie.mostra(lht);
+				//System.out.println("Codificando: ");
+				//TestTrie.mostra(lht);
 				aritmetico.encode(lht);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -281,17 +288,22 @@ public class PpmCod {
 		Vector<Character> valores = valoresCodificados.get(j);
 		char ch = s.charAt(0);
 		
+		//System.out.print("Comprimindo " + (int) ch + "|");
+		
 		int lht[] = new int[3];
 		lht[0] = (int) ch;
 		lht[1] = (int) ch + 1;
 		lht[2] = totalContextoMenosUm[j]--;
 		
 		for (int i = 0; i < valores.size(); i++) {
-			if (valores.get(i).charValue() < ch) {
+			//System.out.print(" " + (int) valores.get(i).charValue());
+			if (valores.get(i).charValue() <= ch) {
 				lht[0]--;
 				lht[1]--;
 			}
 		}
+		
+		//System.out.println(" valor final: " + lht[0]);
 		
 		valores.add(ch);
 
@@ -299,8 +311,8 @@ public class PpmCod {
 		//System.out.println(lht[0] + " " + lht[1] + " " +lht[2]);
 		
 		try {
-			System.out.println("Codificando: ");
-			TestTrie.mostra(lht);
+			//System.out.println("Codificando: ");
+			//TestTrie.mostra(lht);
 			aritmetico.encode(lht);
 		} catch (IOException e) {
 			e.printStackTrace();

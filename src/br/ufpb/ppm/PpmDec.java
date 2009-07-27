@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Vector;
 
 import com.colloquial.arithcode.ArithDecoder;
@@ -31,6 +32,8 @@ public class PpmDec {
 	private static Vector<Vector<Character>> valoresDecodificados;
 	private static int totalContextoMenosUm[];
 	private static char caracteres[];
+	
+	static int parada = 0;
 
 	/**
 	 * 
@@ -184,13 +187,15 @@ public class PpmDec {
 						continue;
 					}
 					
+					//if (++parada == 100) System.exit(0);
+					
 					retorno = decodificador[i].getCurrentSymbolCount(contextoAtual.totalDeFilhos+contextoAtual.totalEscape);
 					if (retorno >= contextoAtual.totalDeFilhos) { // escape
 						lht[0] = contextoAtual.totalDeFilhos;
 						lht[1] = lht[2] = contextoAtual.totalDeFilhos + contextoAtual.totalEscape;
 						try {
-							System.out.println("Decodificando: ");
-							TestTrie.mostra(lht);
+							//System.out.println("Decodificando 1: ");
+							//TestTrie.mostra(lht);
 							decodificador[i].removeSymbolFromStream(lht);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -205,8 +210,8 @@ public class PpmDec {
 						
 						ch = caracteres[i];
 						try {
-							System.out.println("Decodificando: ");
-							TestTrie.mostra(lht);
+							//System.out.println("Decodificando 2: ");
+							//TestTrie.mostra(lht);
 							decodificador[i].removeSymbolFromStream(lht);
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -228,6 +233,7 @@ public class PpmDec {
 				} else {
 					palavraAtual[i] = (maiorContexto > 0) ? palavraAtual[i].substring(1) + ch : "";
 				}
+				//System.out.println(palavraAtual[i]);
 				
 			}
 			
@@ -253,7 +259,7 @@ public class PpmDec {
 	public static char decodificaContextoMenosUm (int i) {
 		Vector <Character> decodificados = valoresDecodificados.get(i);
 		int retorno = decodificador[i].getCurrentSymbolCount(totalContextoMenosUm[i]);
-		System.out.println(retorno);
+		//System.out.println(retorno);
 		char ch = encontraSimboloMenosUm(retorno, decodificados);
 		decodificados.add(ch);
 		//palavraAtual[i] += ch;
@@ -263,14 +269,15 @@ public class PpmDec {
 		//	arvores[i].insere(palavraAtual[i]);
 
 		caracteres[i] = ch;
+		//System.out.println("Ch dentro: " + (int) ch);
 		int lht [] = new int[3];
 		lht[0] = retorno;
 		lht[1] = retorno + 1;
 		lht[2] = totalContextoMenosUm[i]--;
 		//System.out.println(lht[0]);
 		try {
-			System.out.println("Decodificando: ");
-			TestTrie.mostra(lht);
+			//System.out.println("Decodificando 3: ");
+			//TestTrie.mostra(lht);
 			decodificador[i].removeSymbolFromStream(lht);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -282,11 +289,19 @@ public class PpmDec {
 
 	public static char encontraSimboloMenosUm (int simbolo, Vector<Character> vetorDecodificados) {
 		char aux = (char) simbolo;
-
+		
+		//System.out.print("Simbolo: " + simbolo + "|");
+		
+		Collections.sort(vetorDecodificados);
+		
 		for (int i = 0; i < vetorDecodificados.size(); i++) {
-			if (vetorDecodificados.get(i).charValue() <= aux)
+			//System.out.print(" " + (int)vetorDecodificados.get(i).charValue());
+			if (vetorDecodificados.get(i).charValue() <= aux) {
 				aux++;
+			}
 		}
+		//System.out.println(" valor final: " + (int)aux);
+		if (vetorDecodificados.indexOf(aux) != -1) aux++;
 		return aux;
 	}
 	
