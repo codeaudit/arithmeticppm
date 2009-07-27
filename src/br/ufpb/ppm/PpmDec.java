@@ -152,6 +152,7 @@ public class PpmDec {
 		Vector <PseudoNo> contextos;
 
 		while (!decodificador[0].endOfStream()) { // o final da stream de todos os decodificadores ocorrera no mesmo momento
+			
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
 				//System.out.println(palavraAtual[i]);
 				/*if (palavraAtual[i].length() == 0) {
@@ -188,6 +189,9 @@ public class PpmDec {
 					}
 					
 					//if (++parada == 100) System.exit(0);
+					//++parada;
+					
+					if (decodificador[i].endOfStream()) continue;
 					
 					retorno = decodificador[i].getCurrentSymbolCount(contextoAtual.totalDeFilhos+contextoAtual.totalEscape);
 					if (retorno >= contextoAtual.totalDeFilhos) { // escape
@@ -210,7 +214,7 @@ public class PpmDec {
 						
 						ch = caracteres[i];
 						try {
-							//System.out.println("Decodificando 2: ");
+							//System.out.println("Decodificando 2 (" +i + "): ");
 							//TestTrie.mostra(lht);
 							decodificador[i].removeSymbolFromStream(lht);
 						} catch (IOException e) {
