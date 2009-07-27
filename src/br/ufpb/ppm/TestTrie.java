@@ -26,10 +26,10 @@ public class TestTrie {
 
 		palavra = "abracadabra"; // exemplo da sala
 		String palavraAtual = "";
-		int teste2[] = trie.getLowHighTotal("a", true, new PseudoNo());
-		mostra (teste2);
-		teste2 = trie.getLowHighTotal("a", true, new PseudoNo());
-		mostra(teste2);
+		//int teste2[] = trie.getLowHighTotal("a", true, new PseudoNo());
+		//mostra (teste2);
+		//teste2 = trie.getLowHighTotal("a", true, new PseudoNo());
+		//mostra(teste2);
 		int contexto = 3;
 
 		for (int i = 0; i < palavra.length(); i++) {
@@ -98,10 +98,10 @@ public class TestTrie {
 		//Node paiAux = null;
 		int[] lht;
 
-		lht = arvore.getLowHighTotal(s, true, paiAux);
+		//lht = arvore.getLowHighTotal(s, true, paiAux);
 		System.out.println(paiAux.no);
 		paiAux.no.totalDeFilhos = 15;
-		mostra(lht);
+		//mostra(lht);
 	}
 
 }

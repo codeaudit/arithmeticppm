@@ -129,6 +129,7 @@ public class PpmDec {
 		caracteres = new char[numeroDeGruposDeBits];
 		arquivosDeEntrada = new String[numeroDeGruposDeBits];
 		arquivosDeEntrada[0] = args[0];
+		StringBuffer exclusao, exclusaoAux;
 		long tempoAntes, tempoDepois;
 
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
@@ -190,6 +191,7 @@ public class PpmDec {
 
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
 				//System.out.println(palavraAtual[i]);
+				exclusao = new StringBuffer();
 				
 				contextos = null;
 				contextos = arvores[i].retornaContextos(palavraAtual[i], contextos);
@@ -199,6 +201,7 @@ public class PpmDec {
 				}
 
 				for (int j = 0; j < contextos.size(); j++) {
+					exclusaoAux = new StringBuffer();
 					Node contextoAtual = contextos.get(j).no;
 					if (contextoAtual.totalDeFilhos == 0) {
 						if (j == contextos.size() - 1) // nao ha o contexto atual em k == 0
@@ -208,13 +211,17 @@ public class PpmDec {
 
 					//if (++parada == 100) System.exit(0);
 					//++parada;
-
+					
 					if (decodificador[i].endOfStream()) continue;
+					
+					int totalDeFilhosExclusao = arvores[i].getTotalDeFilhosExclusaoEAtualiza(contextoAtual, exclusao, exclusaoAux);
+					//System.out.print("Encontrado/normal: " + (totalDeFilhosExclusao+contextoAtual.totalEscape));
+					//System.out.println("/"+(contextoAtual.totalDeFilhos+contextoAtual.totalEscape));
 
-					retorno = decodificador[i].getCurrentSymbolCount(contextoAtual.totalDeFilhos+contextoAtual.totalEscape);
-					if (retorno >= contextoAtual.totalDeFilhos) { // escape
-						lht[0] = contextoAtual.totalDeFilhos;
-						lht[1] = lht[2] = contextoAtual.totalDeFilhos + contextoAtual.totalEscape;
+					retorno = decodificador[i].getCurrentSymbolCount(totalDeFilhosExclusao+contextoAtual.totalEscape);
+					if (retorno >= totalDeFilhosExclusao) { // escape
+						lht[0] = totalDeFilhosExclusao;
+						lht[1] = lht[2] = totalDeFilhosExclusao + contextoAtual.totalEscape;
 						try {
 							//System.out.println("Decodificando 1: ");
 							//TestTrie.mostra(lht);
@@ -228,7 +235,8 @@ public class PpmDec {
 							ch = decodificaContextoMenosUm(i);
 						}
 					} else {
-						lht = arvores[i].retornaNoPeloLow(contextoAtual, retorno, caracteres, i);
+						lht = arvores[i].retornaNoPeloLow(contextoAtual, retorno, caracteres, i, exclusao);
+						lht[2] = totalDeFilhosExclusao + contextoAtual.totalEscape;
 
 						ch = caracteres[i];
 						try {
@@ -243,6 +251,7 @@ public class PpmDec {
 						break;
 						//ch = arvores[i].retornaSimbolo (retorno);
 					}
+					arvores[i].juntaStrings(exclusao, exclusaoAux);
 				}
 
 				for (int j = 0; j < contextos.size(); j++) {
