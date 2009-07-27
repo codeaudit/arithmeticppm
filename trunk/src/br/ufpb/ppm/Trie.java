@@ -133,10 +133,11 @@ public class Trie {
 	}
 	
 	public int[] getLowHighTotal (String s) {
-		return getLowHighTotal (s, false, new PseudoNo());
+		return getLowHighTotal (s, false, new PseudoNo(), null);
 	}
 	
-	public int[] getLowHighTotal (String s, boolean atualiza, PseudoNo pseudoPai) {
+	public int[] getLowHighTotal (String s, boolean atualiza, PseudoNo pseudoPai, StringBuffer passagem) {
+		StringBuffer exclusao = new StringBuffer ();
 		Node current = raiz;
 		//pseudoPai.no = raiz;
 		Node pai = raiz;
@@ -146,31 +147,71 @@ public class Trie {
 
 		while (current != null) {
 			for (int i = 0; i < s.length(); i++) {
-				if ((indiceAux = current.filhos.indexOf(new Node (s.charAt(i)))) == -1) {
-					
-					// retorna o escape
-					retorno[0] = current.totalDeFilhos;
-					retorno[1] = current.totalDeFilhos + current.totalEscape;
-					retorno[2] = current.totalDeFilhos + current.totalEscape;
-					pseudoPai.no = current;
-					return retorno; // string nao encontrada
+				if (s.length() > 1 && i == s.length() - 1) { // logo antes do simbolo a ser codificado
+					//System.out.println("Dentro. String: " +s + " Exclusao: " + exclusao);
+					if ((indiceAux = procuraVetor(current.filhos, s.charAt(i), exclusao)) == -1) { // retorna o escape
+						//System.out.println("Dentro. String: " +s + " Exclusao: " + exclusao);
+						int totalDeFilhosExclusao = getTotalDeFilhosExclusao(current, passagem);
+						retorno[0] = totalDeFilhosExclusao;
+						retorno[1] = totalDeFilhosExclusao + current.totalEscape;
+						retorno[2] = totalDeFilhosExclusao + current.totalEscape;
+						pseudoPai.no = current;
+						juntaStrings(passagem, exclusao);
+						//System.out.print("Escape 1: ");
+						//TestTrie.mostra(retorno);
+						//System.out.println(totalDeFilhosExclusao);
+						return retorno; // string nao encontrada				
+					} else {
+						pai = current;
+						current = current.filhos.get(indiceAux);
+					}
 				} else {
-					pai = current;
-					current = current.filhos.get(indiceAux);
-					// System.out.println("Caracter \"" + current.content
-					// + "\" encontrado");
+					if ((indiceAux = current.filhos.indexOf(new Node (s.charAt(i)))) == -1) {
+
+						// retorna o escape
+						//juntaStrings(passagem, exclusao);
+						int totalDeFilhosExclusao = getTotalDeFilhosExclusao(current, passagem);
+						retorno[0] = totalDeFilhosExclusao;
+						retorno[1] = totalDeFilhosExclusao + current.totalEscape;
+						retorno[2] = totalDeFilhosExclusao + current.totalEscape;
+						pseudoPai.no = current;
+						//System.out.print("Escape 2: ");
+						//TestTrie.mostra(retorno);
+						return retorno; // string nao encontrada
+					} else {
+						pai = current;
+						current = current.filhos.get(indiceAux);
+						// System.out.println("Caracter \"" + current.content
+						// + "\" encontrado");
+					}
 				}
 			}
 			retorno[0] = 0;
-			
+			String stringAux;
+			int totalDeFilhosExclusao = pai.totalDeFilhos;
+			boolean encontrado = false;
+			//System.out.println("Qtd filhos: " + pai.filhos.size());
 			for (int i = 0; i < pai.filhos.size(); i++) {
+				//System.out.print("Mostrando filho: ");
+				//System.out.println((int) pai.filhos.get(i).conteudo);
+				//System.out.println("Tamanho da exclusao: " +passagem.length());
 				if ((aux = pai.filhos.get(i)) == current)
-					break;
-				retorno[0] += aux.contador; 
+					encontrado = true;
+				
+				stringAux = "";
+				stringAux += aux.conteudo;
+				if (passagem.indexOf(stringAux) == -1) {
+					if (!encontrado)
+						retorno[0] += aux.contador; 
+				} else
+					totalDeFilhosExclusao--;
 			}
 			retorno[1] = retorno[0] + current.contador;
-			retorno[2] = pai.totalDeFilhos + pai.totalEscape;
+			retorno[2] = totalDeFilhosExclusao + pai.totalEscape;
+			//System.out.println("Utilizado/normal: " +retorno[2]+"/"+(pai.totalDeFilhos + pai.totalEscape));
 			
+			
+			//TestTrie.mostra(retorno);
 			//System.out.println(pai);
 			
 			pseudoPai.no = pai;
@@ -183,6 +224,40 @@ public class Trie {
 			return retorno;
 		}
 		return null;
+	}
+	
+	public int getTotalDeFilhosExclusao (Node no, StringBuffer exclusao) {
+		int total = no.totalDeFilhos;
+		Node aux;
+		String aux2;
+		for (int i = 0; i < no.filhos.size(); i++) {
+			aux2 = "";
+			aux = no.filhos.get(i);
+			aux2 += aux.conteudo;
+			if (exclusao.indexOf(aux2) != -1)
+				total--;
+		}
+		return total;
+	}
+	
+	public int getTotalDeFilhosExclusaoEAtualiza (Node no, StringBuffer exclusao, StringBuffer exclusaoAux) {
+		int total = no.totalDeFilhos;
+		//System.out.println("Total: " + total);
+		StringBuffer stringAux = new StringBuffer();
+		Node aux;
+		String aux2;
+		for (int i = 0; i < no.filhos.size(); i++) {
+			aux2 = "";
+			aux = no.filhos.get(i);
+			//if (aux.contador == 0) continue;
+			aux2 += aux.conteudo;
+			
+			stringAux.append(aux.conteudo);
+			if (exclusao.indexOf(aux2) != -1)
+				total--;
+		}
+		juntaStrings(exclusaoAux, stringAux);
+		return total;
 	}
 	
 	// metodo para inserir um simbolo em um nó, por conta da maneira que é implementado
@@ -213,6 +288,27 @@ public class Trie {
 		no.filhos.add(aux);
 		no.totalDeFilhos++;
 		no.incrementaEscape(maxCaracteres);
+	}
+	
+	public void juntaStrings (StringBuffer stringUm, StringBuffer stringDois) {
+		String aux;
+		for (int i = 0; i < stringDois.length(); i++) {
+			aux = "";
+			aux += stringDois.charAt(i);
+			if (stringUm.indexOf (aux) == -1)
+				stringUm.append(aux);
+		}
+	}
+	
+	public int procuraVetor(Vector<Node> vetor, char ch, StringBuffer encontrados) {
+		Node aux;
+		for (int i = 0; i < vetor.size(); i++) {
+			aux = vetor.get(i);
+			if (aux.equals(new Node (ch)))
+				return i;
+			encontrados.append(aux.conteudo);
+		}
+		return -1;
 	}
 
 	public void percorre() {
@@ -324,24 +420,49 @@ public class Trie {
 		return null;
 	}
 	
-	public int [] retornaNoPeloLow (Node no, int retorno, char caracteres[], int j) {
+	public int [] retornaNoPeloLow (Node no, int retorno, char caracteres[], int j, StringBuffer exclusao) {
 		int lht[] = new int [3];
 		int total = 0;
+		int totalDeFilhos = no.totalDeFilhos;
+		String stringAux;
+		int indiceAux;
+		//System.out.println(retorno);
+		boolean encontrado = false;
+		
+		//System.out.println("Qtd filhos: " + no.filhos.size());		
 		for (int i = 0; i < no.filhos.size(); i++) {
 			Node aux = no.filhos.get(i);
-			if (retorno >= total && retorno < total + aux.contador) {
-				lht[0] = total;
-				lht[1] = total+aux.contador;
-				lht[2] = no.totalDeFilhos + no.totalEscape;
-				
-				if (caracteres.length > j)
-					caracteres[j] = aux.conteudo;
-				return lht;
+			//System.out.print("Mostrando filho: ");
+			//System.out.println((int) aux.conteudo);
+			stringAux = "";
+			stringAux += aux.conteudo;
+			indiceAux = exclusao.indexOf(stringAux);
+			//System.out.println("Tamanho exclusao: " + exclusao.length() + "\\" + indiceAux);
+			if (indiceAux != -1) {
+				totalDeFilhos -= aux.contador;
+				continue;
 			}
-			total += aux.contador;
+			//System.out.println("Tamanho exclusao: " + exclusao.length() + "\\" + indiceAux);
+			if (retorno >= total && retorno < total + aux.contador) {
+				if (!encontrado) {
+					encontrado = true;
+					lht[1] = aux.contador;
+
+					if (caracteres.length > j)
+						caracteres[j] = aux.conteudo;
+					break;
+					//return lht;
+				}
+			}
+			if (!encontrado)
+				total += aux.contador;
+			
 		}
 		
-		return null;
+		lht[0] = total;
+		lht[1] += total;
+		lht[2] = 0;
+		return lht;
 	}
 	
 }

@@ -181,7 +181,7 @@ public class PpmCod {
 
 						if (palavraAtual[j].length() == 0) continue;
 
-						comprime (codificador[j], palavraAtual[j], arvores[j], j, null);
+						comprime (codificador[j], palavraAtual[j], arvores[j], j, new StringBuffer());
 
 						//if (++parada == 100) {
 						//arvores[j].percorre();
@@ -221,8 +221,10 @@ public class PpmCod {
 		int[] lht;
 
 		if (s.length() == 0) return;
-
-		lht = arvore.getLowHighTotal(s, true, paiAux);
+		
+		//System.out.println("Comprimindo: " +s);
+		lht = arvore.getLowHighTotal(s, true, paiAux, exclusao);
+		//System.out.println("Exclusao: " + exclusao);
 		Node pai = paiAux.no;
 
 		if (lht[0] == 0 && lht[1] == 0 && lht[2] == 0) { // não há nada no contexto, inserir e pular para o próximo
@@ -238,7 +240,7 @@ public class PpmCod {
 		else if ((pai.totalEscape > 0 && lht[1] == lht[2])) { // deve ser codificado um escape
 			//System.out.println("Codificando escape em " + s);
 			try {
-				//System.out.println("Codificando: ");
+				//System.out.println("Codificando 1: ");
 				//TestTrie.mostra(lht);
 				aritmetico.encode(lht);
 			} catch (IOException e) {
@@ -258,7 +260,7 @@ public class PpmCod {
 		else {
 			//System.out.println("Codificando " +s);
 			try {
-				//System.out.println("Codificando: ");
+				//System.out.println("Codificando 2: ");
 				//TestTrie.mostra(lht);
 				aritmetico.encode(lht);
 			} catch (IOException e) {
@@ -304,7 +306,7 @@ public class PpmCod {
 		//System.out.println(lht[0] + " " + lht[1] + " " +lht[2]);
 
 		try {
-			//System.out.println("Codificando: ");
+			//System.out.println("Codificando 3: ");
 			//TestTrie.mostra(lht);
 			aritmetico.encode(lht);
 		} catch (IOException e) {
