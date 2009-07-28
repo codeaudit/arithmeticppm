@@ -29,7 +29,7 @@ public class PpmCod {
 	private static Vector<Vector<Character>> valoresCodificados;
 	private static int totalContextoMenosUm[];
 
-	static int parada = 0;
+	static int parada = 0; // para testes
 
 
 	/**
@@ -103,7 +103,8 @@ public class PpmCod {
 		totalContextoMenosUm = new int[numeroDeGruposDeBits];
 		File temporario = null;
 		long tempoAntes, tempoDepois;
-
+		
+		// inicialização das variáveis
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
 			arvores[i] = new Trie(tamanhoDoGrupoDeBits);
 			palavraAtual[i] = "";
@@ -122,7 +123,7 @@ public class PpmCod {
 					arquivoDeSaida + i :
 						arquivoDeSaida;
 			try {
-				if (i == 0) {
+				if (i == 0) { // o primeiro arquivo é temporário (para que o cabeçalho possa ser inserido depois)
 					temporario = File.createTempFile(nome, "tmp");
 					temporario.deleteOnExit();
 					fos[i] = new FileOutputStream(temporario);
@@ -172,7 +173,8 @@ public class PpmCod {
 							chAux = (char) aux;
 							bytesLidos++;
 						}
-
+						
+						// atualiza palavra
 						if (palavraAtual[j].length() <= maiorContexto) {
 							palavraAtual[j] += chAux;
 						} else {
@@ -199,7 +201,8 @@ public class PpmCod {
 			e.printStackTrace();
 		}
 		tempoDepois = System.currentTimeMillis();
-
+		
+		// fecha os arquivos
 		try {
 			fis.close();
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
@@ -209,7 +212,8 @@ public class PpmCod {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
+		// escreve no arquivo final
 		escreveArquivo (fosFinal, fos[0], temporario, bytesLidos);
 		System.out.println("Codificação concluída em: " + (tempoDepois - tempoAntes) / 1000.0 + "s");
 	}
@@ -257,7 +261,7 @@ public class PpmCod {
 			comprime (aritmetico, s.substring(1), arvore, j, exclusao);
 			return;
 		}
-		else {
+		else { // codificar o simbolo de fato
 			//System.out.println("Codificando " +s);
 			try {
 				//System.out.println("Codificando 2: ");
@@ -276,10 +280,11 @@ public class PpmCod {
 		}
 	}
 
-	// comprimindo para o contexto menos um - aparentemente funciona	
+	// comprimindo para o contexto menos um	
 	public static void comprimeContextoMenosUm (ArithEncoder aritmetico, String s, int j) {
 		if (s.length() > 1) return;
 
+		// pega a lista de valores que já foram codificados
 		Vector<Character> valores = valoresCodificados.get(j);
 		char ch = s.charAt(0);
 

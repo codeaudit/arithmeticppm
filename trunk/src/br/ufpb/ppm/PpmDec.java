@@ -40,7 +40,7 @@ public class PpmDec {
 	/**
 	 * 
 	 * O programa deve ser chamado passando-se parâmetros que foram utilizados na codificação.<br/>
-	 * Uso: PpmDec <i>arquivo</i> <i>maior contexto</i> <i>tamanho do grupo de bits</i> <i>[nome do arquivo de saída]</i>
+	 * Uso: PpmDec <i>arquivo</i> <i>[nome do arquivo de saída]</i>
 	 * 
 	 * @param args  
 	 * 
@@ -57,7 +57,8 @@ public class PpmDec {
 			System.out.println("Uso: PpmDec arquivo(nome do primeiro arquivo caso sejam vários) [nome do arquivo de saída (sem extensão)]");
 			System.exit(0);
 		}
-
+		
+		// pega o cabecalho do arquivo e prepara o arquivo temporario para codificacao
 		try {
 			FileInputStream leitorAux = new FileInputStream (args[0]);
 			byte cabecalho[] = new byte[TAMANHO_CABECALHO];
@@ -131,7 +132,8 @@ public class PpmDec {
 		arquivosDeEntrada[0] = args[0];
 		StringBuffer exclusao, exclusaoAux;
 		long tempoAntes, tempoDepois;
-
+		
+		// inicializacao das variaveis
 		for (int i = 0; i < numeroDeGruposDeBits; i++) {
 			arvores[i] = new Trie(tamanhoDoGrupoDeBits);
 			palavraAtual[i] = "";
@@ -186,7 +188,7 @@ public class PpmDec {
 		int lht[] = new int[3];
 		Vector <PseudoNo> contextos;
 
-		while (totalBytes > 0) { // o final da stream de todos os decodificadores ocorrera no mesmo momento
+		while (totalBytes > 0) {
 			totalBytes--;
 
 			for (int i = 0; i < numeroDeGruposDeBits; i++) {
@@ -214,6 +216,9 @@ public class PpmDec {
 					
 					if (decodificador[i].endOfStream()) continue;
 					
+					// encontra o total de filhos no contexto atual (excluindo os contadores que dever ser
+					// excluidos) e atualiza exclusaoAux com os novos valores que devem ser excluidos
+					// caso seja passado para um proximo contexto
 					int totalDeFilhosExclusao = arvores[i].getTotalDeFilhosExclusaoEAtualiza(contextoAtual, exclusao, exclusaoAux);
 					//System.out.print("Encontrado/normal: " + (totalDeFilhosExclusao+contextoAtual.totalEscape));
 					//System.out.println("/"+(contextoAtual.totalDeFilhos+contextoAtual.totalEscape));
@@ -234,7 +239,7 @@ public class PpmDec {
 						if (j == contextos.size() - 1)  { // escape em k == 0
 							ch = decodificaContextoMenosUm(i);
 						}
-					} else {
+					} else { // decodificando um simbolo que não é escape
 						//System.out.println(System.currentTimeMillis() - tempoAntes);
 						lht = arvores[i].retornaNoPeloLow(contextoAtual, retorno, caracteres, i, exclusao);
 						lht[2] = totalDeFilhosExclusao + contextoAtual.totalEscape;
@@ -273,7 +278,8 @@ public class PpmDec {
 				//System.out.println(palavraAtual[i]);
 
 			}
-
+			
+			// escreve no arquivo
 			try {
 
 				if (tamanhoDoGrupoDeBits > 8) {
@@ -298,6 +304,19 @@ public class PpmDec {
 
 		tempoDepois = System.currentTimeMillis();
 		System.out.println("Decodificação concluída em: " + (tempoDepois - tempoAntes) / 1000.0 + "s");
+		
+		try {
+			fos.close();
+			for (int i = 0; i < numeroDeGruposDeBits; i++) {
+				decodificador[i].close();
+				fis[i].close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("Problema ao fechar os arquivos.");
+			System.exit(0);
+		}
+		
 	}
 
 	public static void copiaConteudo (FileOutputStream escreve, FileInputStream le) {
