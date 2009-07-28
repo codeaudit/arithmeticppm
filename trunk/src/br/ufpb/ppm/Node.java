@@ -6,7 +6,6 @@ public class Node {
 
 	char conteudo;
 	boolean marcador; // marcador de fim de palavra 
-	//Node[] filhos;
 	Vector<Node> filhos;
 	int contador; // para o PPM
 	int totalDeFilhos;
@@ -16,7 +15,6 @@ public class Node {
 	{
 		conteudo = (char)caracter;
 		marcador = false;
-		//filhos = new Node[(int) Math.pow(2, tamanhoDoBlocoDeBits)];
 		filhos = new Vector<Node> ();
 		contador = 1;
 		totalDeFilhos = 0;
@@ -27,7 +25,6 @@ public class Node {
 	{
 		conteudo = (char)caracter;
 		marcador = false;
-		//filhos = new Node[(int) Math.pow(2, tamanhoDoBlocoDeBits)];
 		filhos = new Vector<Node> (capacidade, capacidade);
 		contador = 1;
 		totalDeFilhos = 0;
